@@ -163,3 +163,31 @@ tbody tr:hover {
     padding: 8px;
   }
 }
+
+/* =========================
+   🔹 CORES POR STATUS
+========================= */
+.status {
+  padding: 6px;
+  border-radius: 4px;
+  font-weight: bold;
+  border: none;
+}
+
+/* Não feito / Recebido */
+.status-recebido {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+/* Em produção */
+.status-producao {
+  background: #fff3cd;
+  color: #856404;
+}
+
+/* Finalizado */
+.status-finalizado {
+  background: #d4edda;
+  color: #155724;
+}
