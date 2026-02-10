@@ -44,13 +44,12 @@ if (form) {
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    // 🔒 trava total contra duplicação
     if (enviando) return;
     enviando = true;
     if (botaoEnviar) botaoEnviar.disabled = true;
 
     const os = {
-      createdAt: Date.now(), // auditoria / debug
+      createdAt: Date.now(),
       dataCriacao: new Date().toLocaleString("pt-BR"),
       solicitante: document.getElementById("solicitante").value.trim(),
       setor: document.getElementById("setor").value.trim(),
@@ -68,7 +67,7 @@ if (form) {
       alert("✅ Ordem de serviço enviada com sucesso!");
       form.reset();
     } catch (error) {
-      console.error("Erro ao enviar:", error);
+      console.error(error);
       alert("❌ Erro ao enviar a ordem");
     } finally {
       enviando = false;
@@ -91,7 +90,7 @@ if (lista) {
     if (!snapshot.exists()) {
       lista.innerHTML = `
         <tr>
-          <td colspan="10">Nenhuma ordem registrada.</td>
+          <td colspan="7">Nenhuma ordem registrada.</td>
         </tr>
       `;
       return;
@@ -101,15 +100,15 @@ if (lista) {
       const os = child.val();
       const id = child.key;
 
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
+      /* 🔹 Linha principal */
+      const trPrincipal = document.createElement("tr");
+      trPrincipal.classList.add("linha-principal");
+      trPrincipal.innerHTML = `
         <td>${os.dataCriacao || "-"}</td>
         <td>${os.solicitante || "-"}</td>
         <td>${os.setor || "-"}</td>
-        <td>${os.link || "-"}</td>
         <td>${os.tipoComunicacao || "-"}</td>
         <td>${os.material || "-"}</td>
-        <td>${os.info || "-"}</td>
         <td>${os.prazo || "-"}</td>
         <td>
           <select class="status" data-id="${id}">
@@ -119,13 +118,34 @@ if (lista) {
             <option ${os.status === "Ajuste solicitado" ? "selected" : ""}>Ajuste solicitado</option>
           </select>
         </td>
-        <td>${os.observacoes || "-"}</td>
       `;
 
-      lista.appendChild(tr);
+      /* 🔹 Linha de informações */
+      const trInfo = document.createElement("tr");
+      trInfo.classList.add("linha-info");
+      trInfo.innerHTML = `
+        <td colspan="7">
+          <strong>Informações:</strong>
+          ${os.info || "—"}
+          ${os.link ? `<br><strong>Link/Arquivo:</strong> ${os.link}` : ""}
+        </td>
+      `;
+
+      /* 🔹 Linha de observações */
+      const trObs = document.createElement("tr");
+      trObs.classList.add("linha-obs");
+      trObs.innerHTML = `
+        <td colspan="7">
+          <strong>Observações:</strong> ${os.observacoes || "—"}
+        </td>
+      `;
+
+      lista.appendChild(trPrincipal);
+      lista.appendChild(trInfo);
+      lista.appendChild(trObs);
     });
 
-    // 🔄 atualização de status
+    /* 🔄 Atualização de status */
     document.querySelectorAll(".status").forEach((select) => {
       select.addEventListener("change", (e) => {
         const id = e.target.dataset.id;
