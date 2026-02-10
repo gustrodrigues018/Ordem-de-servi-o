@@ -9,22 +9,19 @@
 
 <h1>📋 Ordem de Serviço</h1>
 
-<p class="aviso">
-  Pedidos para o fim de semana devem ser enviados até <strong>quinta-feira</strong>.
-</p>
-
 <form id="osForm">
+
   <label>Solicitante</label>
-  <input type="text" required>
+  <input type="text" id="solicitante" required>
 
   <label>Setor</label>
-  <input type="text" required>
+  <input type="text" id="setor" required>
 
-  <label>Link ou arquivo para impressão</label>
-  <input type="text" placeholder="Link do Drive ou descrição do arquivo">
+  <label>Link ou arquivo</label>
+  <input type="text" id="link">
 
   <label>Tipo de Comunicação</label>
-  <select required>
+  <select id="tipoComunicacao" required>
     <option value="">Selecione</option>
     <option>Cartaz</option>
     <option>Etiqueta</option>
@@ -33,7 +30,7 @@
   </select>
 
   <label>Tipo de Material</label>
-  <select required>
+  <select id="material" required>
     <option value="">Selecione</option>
     <option>Papel</option>
     <option>Adesivo</option>
@@ -41,14 +38,13 @@
   </select>
 
   <label>Informações complementares</label>
-  <textarea placeholder="Medidas, cores, observações"></textarea>
-
-  <label>Prazo de entrega</label>
-  <input type="date" required>
+  <textarea id="info"></textarea>
 
   <button type="submit">Enviar Ordem</button>
 </form>
 
+<!-- 🔴 SEM ISSO, NADA FUNCIONA -->
 <script type="module" src="script.js"></script>
+
 </body>
 </html>
