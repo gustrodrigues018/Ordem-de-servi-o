@@ -71,17 +71,10 @@ if (form) {
       status: "Recebido"
     };
 
-    try {
-      await push(ref(db, "ordens-servico"), os);
-      alert("✅ Ordem enviada!");
-      form.reset();
-    } catch (err) {
-      alert("❌ Erro ao enviar");
-      console.error(err);
-    } finally {
-      enviando = false;
-      if (botaoEnviar) botaoEnviar.disabled = false;
-    }
+    await push(ref(db, "ordens-servico"), os);
+    form.reset();
+    enviando = false;
+    if (botaoEnviar) botaoEnviar.disabled = false;
   });
 }
 
@@ -89,21 +82,18 @@ if (form) {
    📥 PAINEL
 ========================== */
 const lista = document.getElementById("listaOS");
+const osRef = ref(db, "ordens-servico");
 
-if (lista) {
-  const osRef = ref(db, "ordens-servico");
+onValue(osRef, (snapshot) => {
+  lista.innerHTML = "";
 
-  onValue(osRef, (snapshot) => {
-    lista.innerHTML = "";
+  snapshot.forEach((child) => {
+    const os = child.val();
+    const id = child.key;
 
-    snapshot.forEach((child) => {
-      const os = child.val();
-      const id = child.key;
-
-      /* Linha principal */
-      const trPrincipal = document.createElement("tr");
-      trPrincipal.classList.add("linha-principal");
-      trPrincipal.innerHTML = `
+    /* Linha principal */
+    lista.insertAdjacentHTML("beforeend", `
+      <tr class="linha-principal" data-id="${id}">
         <td>${os.dataCriacao}</td>
         <td>${os.solicitante}</td>
         <td>${os.setor}</td>
@@ -120,75 +110,65 @@ if (lista) {
             <button class="btn-editar" data-id="${id}">Editar</button>
           </div>
         </td>
-      `;
+      </tr>
 
-      /* Informações */
-      const trInfo = document.createElement("tr");
-      trInfo.classList.add("linha-info");
-      trInfo.innerHTML = `
+      <tr class="linha-info">
         <td colspan="7">
           <strong>Informações:</strong>
           <span class="info-text">${os.info || ""}</span>
           ${os.link ? `<br><strong>Link:</strong> ${os.link}` : ""}
         </td>
-      `;
+      </tr>
 
-      /* Observações */
-      const trObs = document.createElement("tr");
-      trObs.classList.add("linha-obs");
-      trObs.innerHTML = `
+      <tr class="linha-obs">
         <td colspan="7">
           <strong>Observações:</strong>
           <span class="obs-text">${os.observacoes || ""}</span>
         </td>
-      `;
-
-      lista.appendChild(trPrincipal);
-      lista.appendChild(trInfo);
-      lista.appendChild(trObs);
-    });
-
-    /* Status */
-    document.querySelectorAll("select.status").forEach(select => {
-      select.addEventListener("change", (e) => {
-        const id = e.target.dataset.id;
-        const novoStatus = e.target.value;
-
-        update(ref(db, `ordens-servico/${id}`), { status: novoStatus });
-        e.target.className = `${classeStatus(novoStatus)} status`;
-      });
-    });
-
-    /* Editar / Salvar */
-    document.querySelectorAll(".btn-editar").forEach(btn => {
-      btn.addEventListener("click", () => {
-        const trPrincipal = btn.closest("tr");
-        const trInfo = trPrincipal.nextElementSibling;
-        const trObs = trInfo.nextElementSibling;
-
-        const infoSpan = trInfo.querySelector(".info-text");
-        const obsSpan = trObs.querySelector(".obs-text");
-        const id = btn.dataset.id;
-
-        if (btn.textContent === "Salvar") {
-          const novoInfo = trInfo.querySelector("textarea").value;
-          const novaObs = trObs.querySelector("textarea").value;
-
-          update(ref(db, `ordens-servico/${id}`), {
-            info: novoInfo,
-            observacoes: novaObs
-          });
-
-          infoSpan.textContent = novoInfo;
-          obsSpan.textContent = novaObs;
-          btn.textContent = "Editar";
-          return;
-        }
-
-        infoSpan.innerHTML = `<textarea style="width:100%">${infoSpan.textContent}</textarea>`;
-        obsSpan.innerHTML = `<textarea style="width:100%">${obsSpan.textContent}</textarea>`;
-        btn.textContent = "Salvar";
-      });
-    });
+      </tr>
+    `);
   });
-}
+});
+
+/* ==========================
+   🔄 EVENT DELEGATION
+========================== */
+lista.addEventListener("change", (e) => {
+  if (!e.target.classList.contains("status")) return;
+
+  const id = e.target.dataset.id;
+  const novoStatus = e.target.value;
+
+  update(ref(db, `ordens-servico/${id}`), { status: novoStatus });
+  e.target.className = `${classeStatus(novoStatus)} status`;
+});
+
+lista.addEventListener("click", (e) => {
+  if (!e.target.classList.contains("btn-editar")) return;
+
+  const btn = e.target;
+  const trPrincipal = btn.closest("tr");
+  const trInfo = trPrincipal.nextElementSibling;
+  const trObs = trInfo.nextElementSibling;
+
+  const infoSpan = trInfo.querySelector(".info-text");
+  const obsSpan = trObs.querySelector(".obs-text");
+  const id = btn.dataset.id;
+
+  if (btn.textContent === "Salvar") {
+    const novoInfo = trInfo.querySelector("textarea").value;
+    const novaObs = trObs.querySelector("textarea").value;
+
+    update(ref(db, `ordens-servico/${id}`), {
+      info: novoInfo,
+      observacoes: novaObs
+    });
+
+    btn.textContent = "Editar";
+    return;
+  }
+
+  infoSpan.innerHTML = `<textarea style="width:100%">${infoSpan.textContent}</textarea>`;
+  obsSpan.innerHTML = `<textarea style="width:100%">${obsSpan.textContent}</textarea>`;
+  btn.textContent = "Salvar";
+});
