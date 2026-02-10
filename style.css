@@ -205,3 +205,47 @@ tbody tr:hover {
 .btn-editar:hover {
   background: #1f66d1;
 }
+
+/* =========================
+   🎨 CORES POR STATUS
+========================= */
+
+.status {
+  padding: 6px 10px;
+  border-radius: 4px;
+  font-weight: bold;
+  border: none;
+}
+
+/* 🔴 Não feito / Recebido */
+.status-recebido {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+/* 🟡 Em produção */
+.status-producao {
+  background: #fff3cd;
+  color: #856404;
+}
+
+/* 🟢 Finalizado */
+.status-finalizado {
+  background: #d4edda;
+  color: #155724;
+}
+
+/* Botão editar */
+.btn-editar {
+  padding: 6px 10px;
+  background: #2d7ff9;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.btn-editar:hover {
+  background: #1f66d1;
+}
