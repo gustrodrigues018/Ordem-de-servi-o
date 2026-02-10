@@ -104,14 +104,14 @@ onValue(osRef, (snapshot) => {
         </td>
       </tr>
 
-      <tr class="linha-info">
+      <tr class="linha-info" data-id="${id}">
         <td colspan="7">
           <strong>Informações:</strong>
           <span class="info-text">${o.info || ""}</span>
         </td>
       </tr>
 
-      <tr class="linha-obs">
+      <tr class="linha-obs" data-id="${id}">
         <td colspan="7">
           <strong>Observações:</strong>
           <span class="obs-text">${o.observacoes || ""}</span>
@@ -122,7 +122,7 @@ onValue(osRef, (snapshot) => {
 });
 
 /* ==========================
-   🖱️ EVENT DELEGATION (EDITAR / SALVAR)
+   🖱️ EDITAR / SALVAR
 ========================== */
 lista.addEventListener("click", (e) => {
   const btn = e.target.closest(".btn-editar");
@@ -133,20 +133,25 @@ lista.addEventListener("click", (e) => {
   const trInfo = trPrincipal.nextElementSibling;
   const trObs = trInfo.nextElementSibling;
 
-  const infoSpan = trInfo.querySelector(".info-text");
-  const obsSpan = trObs.querySelector(".obs-text");
-
   /* 💾 SALVAR */
   if (btn.textContent === "Salvar") {
-    const infoTextarea = trInfo.querySelector("textarea");
-    const obsTextarea = trObs.querySelector("textarea");
+    const novoInfo = trInfo.querySelector("textarea").value;
+    const novaObs = trObs.querySelector("textarea").value;
 
-    const novoInfo = infoTextarea.value;
-    const novaObs = obsTextarea.value;
+    // 🔄 RECRIA AS LINHAS (fecha edição visual)
+    trInfo.innerHTML = `
+      <td colspan="7">
+        <strong>Informações:</strong>
+        <span class="info-text">${novoInfo}</span>
+      </td>
+    `;
 
-    // 🔄 RESTAURA VISUAL IMEDIATA
-    infoSpan.textContent = novoInfo;
-    obsSpan.textContent = novaObs;
+    trObs.innerHTML = `
+      <td colspan="7">
+        <strong>Observações:</strong>
+        <span class="obs-text">${novaObs}</span>
+      </td>
+    `;
 
     update(ref(db, `ordens-servico/${id}`), {
       info: novoInfo,
@@ -166,16 +171,21 @@ lista.addEventListener("click", (e) => {
 
   editandoId = id;
 
-  infoSpan.innerHTML = `
-    <textarea style="width:100%; max-width:100%; box-sizing:border-box;">
-      ${infoSpan.textContent}
-    </textarea>
+  const infoAtual = trInfo.querySelector(".info-text").textContent;
+  const obsAtual = trObs.querySelector(".obs-text").textContent;
+
+  trInfo.innerHTML = `
+    <td colspan="7">
+      <strong>Informações:</strong><br>
+      <textarea style="width:100%; box-sizing:border-box;">${infoAtual}</textarea>
+    </td>
   `;
 
-  obsSpan.innerHTML = `
-    <textarea style="width:100%; max-width:100%; box-sizing:border-box;">
-      ${obsSpan.textContent}
-    </textarea>
+  trObs.innerHTML = `
+    <td colspan="7">
+      <strong>Observações:</strong><br>
+      <textarea style="width:100%; box-sizing:border-box;">${obsAtual}</textarea>
+    </td>
   `;
 
   btn.textContent = "Salvar";
