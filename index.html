@@ -7,51 +7,57 @@
 </head>
 <body>
 
-<h1>📋 Ordem de Serviço</h1>
+  <div class="container">
 
-<p class="aviso">
-  ⏳ Prazo padrão de entrega: <strong>2 dias</strong>
-</p>
+    <h1>📋 Ordem de Serviço</h1>
 
-<form id="osForm">
+    <p class="aviso">
+      ⏳ Prazo padrão de entrega: <strong>2 dias</strong>
+    </p>
 
-  <label>Solicitante</label>
-  <input type="text" id="solicitante" required>
+    <form id="osForm">
 
-  <label>Setor</label>
-  <input type="text" id="setor" required>
+      <label for="solicitante">Solicitante</label>
+      <input type="text" id="solicitante" required>
 
-  <label>Link / Hashtag / Arquivo a ser impresso</label>
-  <input type="text" id="link">
+      <label for="setor">Setor</label>
+      <input type="text" id="setor" required>
 
-  <label>Tipo de Comunicação</label>
-  <select id="tipoComunicacao" required>
-    <option value="">Selecione</option>
-    <option>Cartaz</option>
-    <option>Etiqueta</option>
-    <option>Banner</option>
-    <option>Aviso Interno</option>
-    <option>Digital</option>
-  </select>
+      <label for="link">Link / Hashtag / Arquivo a ser impresso</label>
+      <input type="text" id="link">
 
-  <label>Tipo de Material</label>
-  <select id="material" required>
-    <option value="">Selecione</option>
-    <option>Papel</option>
-    <option>Adesivo</option>
-    <option>Lona</option>
-    <option>Outro</option>
-  </select>
+      <label for="tipoComunicacao">Tipo de Comunicação</label>
+      <select id="tipoComunicacao" required>
+        <option value="">Selecione</option>
+        <option>Cartaz</option>
+        <option>Etiqueta</option>
+        <option>Banner</option>
+        <option>Aviso Interno</option>
+        <option>Digital</option>
+      </select>
 
-  <label>Informações complementares (medidas e outros)</label>
-  <textarea id="info"></textarea>
+      <label for="material">Tipo de Material</label>
+      <select id="material" required>
+        <option value="">Selecione</option>
+        <option>Papel</option>
+        <option>Adesivo</option>
+        <option>Lona</option>
+        <option>Outro</option>
+      </select>
 
-  <label>Observações gerais</label>
-  <textarea id="observacoes"></textarea>
+      <label for="info">Informações complementares (medidas e outros)</label>
+      <textarea id="info"></textarea>
 
-  <button type="submit">Enviar Ordem</button>
-</form>
+      <label for="observacoes">Observações gerais</label>
+      <textarea id="observacoes"></textarea>
 
-<script type="module" src="script.js"></script>
+      <button type="submit">Enviar Ordem</button>
+
+    </form>
+
+  </div>
+
+  <script type="module" src="script.js"></script>
 </body>
 </html>
+
