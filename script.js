@@ -24,7 +24,7 @@ const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
 /* ==========================
-   📅 PRAZO FIXO (+2 DIAS)
+   📅 PRAZO FIXO
 ========================== */
 function calcularPrazo() {
   const d = new Date();
@@ -33,12 +33,12 @@ function calcularPrazo() {
 }
 
 /* ==========================
-   🎨 CLASSE POR STATUS
+   🎨 STATUS
 ========================== */
 function classeStatus(status) {
   if (status === "Finalizado") return "status status-finalizado";
   if (status === "Em produção") return "status status-producao";
-  return "status status-recebido"; // Recebido / Não feito
+  return "status status-recebido";
 }
 
 /* ==========================
@@ -52,32 +52,32 @@ if (form) {
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
-
     if (enviando) return;
+
     enviando = true;
     if (botaoEnviar) botaoEnviar.disabled = true;
 
     const os = {
       createdAt: Date.now(),
       dataCriacao: new Date().toLocaleString("pt-BR"),
-      solicitante: document.getElementById("solicitante").value.trim(),
-      setor: document.getElementById("setor").value.trim(),
-      link: document.getElementById("link").value.trim(),
-      tipoComunicacao: document.getElementById("tipoComunicacao").value,
-      material: document.getElementById("material").value,
-      info: document.getElementById("info").value.trim(),
-      observacoes: document.getElementById("observacoes").value.trim(),
+      solicitante: solicitante.value.trim(),
+      setor: setor.value.trim(),
+      link: link.value.trim(),
+      tipoComunicacao: tipoComunicacao.value,
+      material: material.value,
+      info: info.value.trim(),
+      observacoes: observacoes.value.trim(),
       prazo: calcularPrazo(),
       status: "Recebido"
     };
 
     try {
       await push(ref(db, "ordens-servico"), os);
-      alert("✅ Ordem de serviço enviada com sucesso!");
+      alert("✅ Ordem enviada!");
       form.reset();
-    } catch (error) {
-      console.error(error);
-      alert("❌ Erro ao enviar a ordem");
+    } catch (err) {
+      alert("❌ Erro ao enviar");
+      console.error(err);
     } finally {
       enviando = false;
       if (botaoEnviar) botaoEnviar.disabled = false;
@@ -96,58 +96,50 @@ if (lista) {
   onValue(osRef, (snapshot) => {
     lista.innerHTML = "";
 
-    if (!snapshot.exists()) {
-      lista.innerHTML = `
-        <tr>
-          <td colspan="8">Nenhuma ordem registrada.</td>
-        </tr>
-      `;
-      return;
-    }
-
     snapshot.forEach((child) => {
       const os = child.val();
       const id = child.key;
 
-      /* 🔹 Linha principal */
+      /* Linha principal */
       const trPrincipal = document.createElement("tr");
       trPrincipal.classList.add("linha-principal");
       trPrincipal.innerHTML = `
-        <td>${os.dataCriacao || "-"}</td>
-        <td>${os.solicitante || "-"}</td>
-        <td>${os.setor || "-"}</td>
-        <td>${os.tipoComunicacao || "-"}</td>
-        <td>${os.material || "-"}</td>
-        <td>${os.prazo || "-"}</td>
+        <td>${os.dataCriacao}</td>
+        <td>${os.solicitante}</td>
+        <td>${os.setor}</td>
+        <td>${os.tipoComunicacao}</td>
+        <td>${os.material}</td>
+        <td>${os.prazo}</td>
         <td>
-          <select class="${classeStatus(os.status)}" data-id="${id}">
-            <option ${os.status === "Recebido" ? "selected" : ""}>Recebido</option>
-            <option ${os.status === "Em produção" ? "selected" : ""}>Em produção</option>
-            <option ${os.status === "Finalizado" ? "selected" : ""}>Finalizado</option>
-          </select>
-        </td>
-        <td>
-          <button class="btn-editar" data-id="${id}">Editar</button>
+          <div class="status-container">
+            <select class="${classeStatus(os.status)} status" data-id="${id}">
+              <option ${os.status === "Recebido" ? "selected" : ""}>Recebido</option>
+              <option ${os.status === "Em produção" ? "selected" : ""}>Em produção</option>
+              <option ${os.status === "Finalizado" ? "selected" : ""}>Finalizado</option>
+            </select>
+            <button class="btn-editar" data-id="${id}">Editar</button>
+          </div>
         </td>
       `;
 
-      /* 🔹 Linha de informações */
+      /* Informações */
       const trInfo = document.createElement("tr");
       trInfo.classList.add("linha-info");
       trInfo.innerHTML = `
-        <td colspan="8">
+        <td colspan="7">
           <strong>Informações:</strong>
-          ${os.info || "—"}
-          ${os.link ? `<br><strong>Link/Arquivo:</strong> ${os.link}` : ""}
+          <span class="info-text">${os.info || ""}</span>
+          ${os.link ? `<br><strong>Link:</strong> ${os.link}` : ""}
         </td>
       `;
 
-      /* 🔹 Linha de observações */
+      /* Observações */
       const trObs = document.createElement("tr");
       trObs.classList.add("linha-obs");
       trObs.innerHTML = `
-        <td colspan="8">
-          <strong>Observações:</strong> ${os.observacoes || "—"}
+        <td colspan="7">
+          <strong>Observações:</strong>
+          <span class="obs-text">${os.observacoes || ""}</span>
         </td>
       `;
 
@@ -156,24 +148,46 @@ if (lista) {
       lista.appendChild(trObs);
     });
 
-    /* 🔄 Atualização de status + cor */
-    document.querySelectorAll(".status").forEach((select) => {
+    /* Status */
+    document.querySelectorAll("select.status").forEach(select => {
       select.addEventListener("change", (e) => {
         const id = e.target.dataset.id;
         const novoStatus = e.target.value;
 
-        update(ref(db, `ordens-servico/${id}`), {
-          status: novoStatus
-        });
+        update(ref(db, `ordens-servico/${id}`), { status: novoStatus });
+        e.target.className = `${classeStatus(novoStatus)} status`;
       });
     });
 
-    /* ✏️ Botão editar (simples por enquanto) */
-    document.querySelectorAll(".btn-editar").forEach((btn) => {
-      btn.addEventListener("click", (e) => {
-        const id = e.target.dataset.id;
-        alert("Editar ordem: " + id);
-        // próximo passo: modal de edição
+    /* Editar / Salvar */
+    document.querySelectorAll(".btn-editar").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const trPrincipal = btn.closest("tr");
+        const trInfo = trPrincipal.nextElementSibling;
+        const trObs = trInfo.nextElementSibling;
+
+        const infoSpan = trInfo.querySelector(".info-text");
+        const obsSpan = trObs.querySelector(".obs-text");
+        const id = btn.dataset.id;
+
+        if (btn.textContent === "Salvar") {
+          const novoInfo = trInfo.querySelector("textarea").value;
+          const novaObs = trObs.querySelector("textarea").value;
+
+          update(ref(db, `ordens-servico/${id}`), {
+            info: novoInfo,
+            observacoes: novaObs
+          });
+
+          infoSpan.textContent = novoInfo;
+          obsSpan.textContent = novaObs;
+          btn.textContent = "Editar";
+          return;
+        }
+
+        infoSpan.innerHTML = `<textarea style="width:100%">${infoSpan.textContent}</textarea>`;
+        obsSpan.innerHTML = `<textarea style="width:100%">${obsSpan.textContent}</textarea>`;
+        btn.textContent = "Salvar";
       });
     });
   });
