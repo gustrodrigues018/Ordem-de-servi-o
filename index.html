@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Ordem de Serviço</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h1>📋 Ordem de Serviço</h1>
+
+<p class="aviso">
+  Pedidos para o fim de semana devem ser enviados até <strong>quinta-feira</strong>.
+</p>
+
+<form id="osForm">
+  <label>Solicitante</label>
+  <input type="text" required>
+
+  <label>Setor</label>
+  <input type="text" required>
+
+  <label>Link ou arquivo para impressão</label>
+  <input type="text" placeholder="Link do Drive ou descrição do arquivo">
+
+  <label>Tipo de Comunicação</label>
+  <select required>
+    <option value="">Selecione</option>
+    <option>Cartaz</option>
+    <option>Etiqueta</option>
+    <option>Banner</option>
+    <option>Aviso Interno</option>
+  </select>
+
+  <label>Tipo de Material</label>
+  <select required>
+    <option value="">Selecione</option>
+    <option>Papel</option>
+    <option>Adesivo</option>
+    <option>Lona</option>
+  </select>
+
+  <label>Informações complementares</label>
+  <textarea placeholder="Medidas, cores, observações"></textarea>
+
+  <label>Prazo de entrega</label>
+  <input type="date" required>
+
+  <button type="submit">Enviar Ordem</button>
+</form>
+
+<script src="script.js"></script>
+</body>
+</html>
