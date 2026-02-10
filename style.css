@@ -124,13 +124,6 @@ tr.linha-principal td {
   font-weight: 500;
 }
 
-tr.linha-info td,
-tr.linha-obs td {
-  text-align: left;
-  padding: 12px 15px;
-  font-size: 14px;
-}
-
 tr.linha-info {
   background: #fafafa;
 }
@@ -138,6 +131,13 @@ tr.linha-info {
 tr.linha-obs {
   background: #f9f9f9;
   border-bottom: 3px solid #ddd;
+}
+
+tr.linha-info td,
+tr.linha-obs td {
+  text-align: left;
+  padding: 12px 15px;
+  font-size: 14px;
 }
 
 tr.linha-info strong,
@@ -179,6 +179,16 @@ select.status {
 }
 
 /* =========================
+   📐 STATUS + EDITAR ALINHADOS
+========================= */
+.status-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+/* =========================
    ✏️ BOTÃO EDITAR
 ========================= */
 .btn-editar {
@@ -191,6 +201,7 @@ select.status {
   cursor: pointer;
   font-size: 13px;
   font-weight: bold;
+  white-space: nowrap;
 }
 
 .btn-editar:hover {
@@ -219,5 +230,9 @@ tbody tr:hover {
   th,
   td {
     padding: 8px;
+  }
+
+  .status-container {
+    flex-direction: column;
   }
 }
