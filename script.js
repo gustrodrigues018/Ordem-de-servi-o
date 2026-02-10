@@ -33,7 +33,16 @@ function calcularPrazo() {
 }
 
 /* ==========================
-   📤 FORMULÁRIO (index.html)
+   🎨 CLASSE POR STATUS
+========================== */
+function classeStatus(status) {
+  if (status === "Finalizado") return "status status-finalizado";
+  if (status === "Em produção") return "status status-producao";
+  return "status status-recebido"; // Recebido / Não feito
+}
+
+/* ==========================
+   📤 FORMULÁRIO
 ========================== */
 const form = document.getElementById("osForm");
 let enviando = false;
@@ -77,7 +86,7 @@ if (form) {
 }
 
 /* ==========================
-   📥 PAINEL (painel.html)
+   📥 PAINEL
 ========================== */
 const lista = document.getElementById("listaOS");
 
@@ -90,7 +99,7 @@ if (lista) {
     if (!snapshot.exists()) {
       lista.innerHTML = `
         <tr>
-          <td colspan="7">Nenhuma ordem registrada.</td>
+          <td colspan="8">Nenhuma ordem registrada.</td>
         </tr>
       `;
       return;
@@ -111,12 +120,14 @@ if (lista) {
         <td>${os.material || "-"}</td>
         <td>${os.prazo || "-"}</td>
         <td>
-          <select class="status" data-id="${id}">
+          <select class="${classeStatus(os.status)}" data-id="${id}">
             <option ${os.status === "Recebido" ? "selected" : ""}>Recebido</option>
             <option ${os.status === "Em produção" ? "selected" : ""}>Em produção</option>
             <option ${os.status === "Finalizado" ? "selected" : ""}>Finalizado</option>
-            <option ${os.status === "Ajuste solicitado" ? "selected" : ""}>Ajuste solicitado</option>
           </select>
+        </td>
+        <td>
+          <button class="btn-editar" data-id="${id}">Editar</button>
         </td>
       `;
 
@@ -124,7 +135,7 @@ if (lista) {
       const trInfo = document.createElement("tr");
       trInfo.classList.add("linha-info");
       trInfo.innerHTML = `
-        <td colspan="7">
+        <td colspan="8">
           <strong>Informações:</strong>
           ${os.info || "—"}
           ${os.link ? `<br><strong>Link/Arquivo:</strong> ${os.link}` : ""}
@@ -135,7 +146,7 @@ if (lista) {
       const trObs = document.createElement("tr");
       trObs.classList.add("linha-obs");
       trObs.innerHTML = `
-        <td colspan="7">
+        <td colspan="8">
           <strong>Observações:</strong> ${os.observacoes || "—"}
         </td>
       `;
@@ -145,13 +156,24 @@ if (lista) {
       lista.appendChild(trObs);
     });
 
-    /* 🔄 Atualização de status */
+    /* 🔄 Atualização de status + cor */
     document.querySelectorAll(".status").forEach((select) => {
       select.addEventListener("change", (e) => {
         const id = e.target.dataset.id;
+        const novoStatus = e.target.value;
+
         update(ref(db, `ordens-servico/${id}`), {
-          status: e.target.value
+          status: novoStatus
         });
+      });
+    });
+
+    /* ✏️ Botão editar (simples por enquanto) */
+    document.querySelectorAll(".btn-editar").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        const id = e.target.dataset.id;
+        alert("Editar ordem: " + id);
+        // próximo passo: modal de edição
       });
     });
   });
