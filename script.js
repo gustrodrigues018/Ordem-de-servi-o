@@ -1,15 +1,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
-import {
-  getDatabase,
-  ref,
-  push,
-  onValue,
-  update
-} from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
+import { getDatabase, ref, push, onValue, update } 
+from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
 
-/* ==========================
-   🔥 FIREBASE CONFIG
-========================== */
 const firebaseConfig = {
   apiKey: "AIzaSyC2PhF95pAkWIbDk4Z_PWHG1JWFVARVLQc",
   authDomain: "ordem-de-servico-af727.firebaseapp.com",
@@ -23,152 +15,82 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-/* ==========================
-   📅 PRAZO FIXO
-========================== */
+/* Prazo */
 function calcularPrazo() {
   const d = new Date();
   d.setDate(d.getDate() + 2);
   return d.toISOString().split("T")[0];
 }
 
-/* ==========================
-   🎨 STATUS
-========================== */
-function classeStatus(status) {
-  if (status === "Finalizado") return "status status-finalizado";
-  if (status === "Em produção") return "status status-producao";
+/* Status */
+function classeStatus(s) {
+  if (s === "Finalizado") return "status status-finalizado";
+  if (s === "Em produção") return "status status-producao";
   return "status status-recebido";
 }
 
-/* ==========================
-   📤 FORMULÁRIO
-========================== */
+/* Form */
 const form = document.getElementById("osForm");
-let enviando = false;
-
 if (form) {
-  const botaoEnviar = form.querySelector("button[type='submit']");
-
-  form.addEventListener("submit", async (e) => {
+  form.addEventListener("submit", async e => {
     e.preventDefault();
-    if (enviando) return;
 
-    enviando = true;
-    if (botaoEnviar) botaoEnviar.disabled = true;
-
-    const os = {
-      createdAt: Date.now(),
+    await push(ref(db, "ordens-servico"), {
       dataCriacao: new Date().toLocaleString("pt-BR"),
-      solicitante: solicitante.value.trim(),
-      setor: setor.value.trim(),
-      link: link.value.trim(),
+      solicitante: solicitante.value,
+      setor: setor.value,
+      link: link.value,
       tipoComunicacao: tipoComunicacao.value,
       material: material.value,
-      info: info.value.trim(),
-      observacoes: observacoes.value.trim(),
+      info: info.value,
+      observacoes: observacoes.value,
       prazo: calcularPrazo(),
       status: "Recebido"
-    };
+    });
 
-    await push(ref(db, "ordens-servico"), os);
+    alert("✅ Ordem enviada");
     form.reset();
-    enviando = false;
-    if (botaoEnviar) botaoEnviar.disabled = false;
   });
 }
 
-/* ==========================
-   📥 PAINEL
-========================== */
+/* Painel */
 const lista = document.getElementById("listaOS");
-const osRef = ref(db, "ordens-servico");
+if (lista) {
+  const osRef = ref(db, "ordens-servico");
 
-onValue(osRef, (snapshot) => {
-  lista.innerHTML = "";
+  onValue(osRef, snap => {
+    lista.innerHTML = "";
 
-  snapshot.forEach((child) => {
-    const os = child.val();
-    const id = child.key;
+    snap.forEach(child => {
+      const o = child.val();
+      const id = child.key;
 
-    /* Linha principal */
-    lista.insertAdjacentHTML("beforeend", `
-      <tr class="linha-principal" data-id="${id}">
-        <td>${os.dataCriacao}</td>
-        <td>${os.solicitante}</td>
-        <td>${os.setor}</td>
-        <td>${os.tipoComunicacao}</td>
-        <td>${os.material}</td>
-        <td>${os.prazo}</td>
-        <td>
-          <div class="status-container">
-            <select class="${classeStatus(os.status)} status" data-id="${id}">
-              <option ${os.status === "Recebido" ? "selected" : ""}>Recebido</option>
-              <option ${os.status === "Em produção" ? "selected" : ""}>Em produção</option>
-              <option ${os.status === "Finalizado" ? "selected" : ""}>Finalizado</option>
-            </select>
-            <button class="btn-editar" data-id="${id}">Editar</button>
-          </div>
-        </td>
-      </tr>
-
-      <tr class="linha-info">
-        <td colspan="7">
-          <strong>Informações:</strong>
-          <span class="info-text">${os.info || ""}</span>
-          ${os.link ? `<br><strong>Link:</strong> ${os.link}` : ""}
-        </td>
-      </tr>
-
-      <tr class="linha-obs">
-        <td colspan="7">
-          <strong>Observações:</strong>
-          <span class="obs-text">${os.observacoes || ""}</span>
-        </td>
-      </tr>
-    `);
-  });
-});
-
-/* ==========================
-   🔄 EVENT DELEGATION
-========================== */
-lista.addEventListener("change", (e) => {
-  if (!e.target.classList.contains("status")) return;
-
-  const id = e.target.dataset.id;
-  const novoStatus = e.target.value;
-
-  update(ref(db, `ordens-servico/${id}`), { status: novoStatus });
-  e.target.className = `${classeStatus(novoStatus)} status`;
-});
-
-lista.addEventListener("click", (e) => {
-  if (!e.target.classList.contains("btn-editar")) return;
-
-  const btn = e.target;
-  const trPrincipal = btn.closest("tr");
-  const trInfo = trPrincipal.nextElementSibling;
-  const trObs = trInfo.nextElementSibling;
-
-  const infoSpan = trInfo.querySelector(".info-text");
-  const obsSpan = trObs.querySelector(".obs-text");
-  const id = btn.dataset.id;
-
-  if (btn.textContent === "Salvar") {
-    const novoInfo = trInfo.querySelector("textarea").value;
-    const novaObs = trObs.querySelector("textarea").value;
-
-    update(ref(db, `ordens-servico/${id}`), {
-      info: novoInfo,
-      observacoes: novaObs
+      lista.insertAdjacentHTML("beforeend", `
+        <tr data-id="${id}">
+          <td>${o.dataCriacao}</td>
+          <td>${o.solicitante}</td>
+          <td>${o.setor}</td>
+          <td>${o.tipoComunicacao}</td>
+          <td>${o.material}</td>
+          <td>${o.prazo}</td>
+          <td>
+            <div class="status-container">
+              <select class="${classeStatus(o.status)} status" data-id="${id}">
+                <option ${o.status==="Recebido"?"selected":""}>Recebido</option>
+                <option ${o.status==="Em produção"?"selected":""}>Em produção</option>
+                <option ${o.status==="Finalizado"?"selected":""}>Finalizado</option>
+              </select>
+              <button class="btn-editar" data-id="${id}">Editar</button>
+            </div>
+          </td>
+        </tr>
+        <tr class="linha-info">
+          <td colspan="7"><strong>Informações:</strong> ${o.info}</td>
+        </tr>
+        <tr class="linha-obs">
+          <td colspan="7"><strong>Observações:</strong> ${o.observacoes}</td>
+        </tr>
+      `);
     });
-
-    btn.textContent = "Editar";
-    return;
-  }
-
-  infoSpan.innerHTML = `<textarea style="width:100%">${infoSpan.textContent}</textarea>`;
-  obsSpan.innerHTML = `<textarea style="width:100%">${obsSpan.textContent}</textarea>`;
-  btn.textContent = "Salvar";
-});
+  });
+}
