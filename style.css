@@ -129,3 +129,28 @@ thead {
 
 .btn-salvar { background: #28a745; }
 .btn-cancelar { background: #dc3545; }
+
+/* 🔒 Evita estourar largura da tela */
+table {
+  table-layout: fixed;
+  word-wrap: break-word;
+}
+
+td {
+  max-width: 100%;
+  overflow-wrap: break-word;
+}
+
+/* Textareas de edição */
+.linha-info textarea,
+.linha-obs textarea {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  resize: vertical;
+}
+
+/* Painel nunca ultrapassa a tela */
+.painel-container {
+  overflow-x: auto;
+}
