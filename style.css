@@ -1,45 +1,36 @@
-/* =========================
-   🔹 BASE GERAL
-========================= */
 body {
   font-family: Arial, sans-serif;
   background: #f4f6f8;
   margin: 0;
-  padding: 0;
 }
 
-/* =========================
-   🔹 CONTAINER (INDEX)
-========================= */
+/* Containers */
 .container {
   max-width: 800px;
-  margin: 0 auto;
+  margin: auto;
   padding: 30px;
 }
 
-/* =========================
-   🔹 TÍTULOS
-========================= */
-h1 {
-  margin-bottom: 20px;
-  text-align: center;
+.painel-container {
+  width: 100%;
+  padding: 30px;
 }
 
-/* =========================
-   🔹 AVISOS
-========================= */
+/* Títulos */
+h1 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* Aviso */
 .aviso {
   background: #fff3cd;
   padding: 12px;
   border-left: 5px solid #ffc107;
   margin-bottom: 20px;
-  font-size: 14px;
-  border-radius: 4px;
 }
 
-/* =========================
-   🔹 FORMULÁRIO
-========================= */
+/* Form */
 form {
   background: #fff;
   padding: 25px;
@@ -47,25 +38,15 @@ form {
 }
 
 label {
-  display: block;
-  margin-top: 15px;
   font-weight: bold;
+  margin-top: 15px;
+  display: block;
 }
 
-input,
-select,
-textarea {
+input, select, textarea {
   width: 100%;
   padding: 8px;
   margin-top: 5px;
-  font-family: inherit;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-
-textarea {
-  min-height: 80px;
-  resize: vertical;
 }
 
 button {
@@ -76,163 +57,75 @@ button {
   color: #fff;
   border: none;
   border-radius: 4px;
-  cursor: pointer;
-  font-size: 15px;
   font-weight: bold;
+  cursor: pointer;
 }
 
-button:hover {
-  background: #1f66d1;
-}
-
-button:disabled {
-  background: #9bbcff;
-  cursor: not-allowed;
-}
-
-/* =========================
-   🔹 TABELA (PAINEL)
-========================= */
+/* Tabela */
 table {
   width: 100%;
   background: #fff;
   border-collapse: collapse;
-  margin-top: 20px;
+}
+
+th, td {
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+  text-align: center;
 }
 
 thead {
   background: #f1f3f5;
 }
 
-th,
-td {
-  padding: 10px;
-  border-bottom: 1px solid #ddd;
-  text-align: center;
-  font-size: 14px;
-}
-
-th {
-  font-weight: bold;
-}
-
-/* =========================
-   🔹 LINHAS POR ORDEM
-========================= */
-tr.linha-principal td {
-  background: #ffffff;
-  font-weight: 500;
-}
-
-tr.linha-info {
+/* Linhas extras */
+.linha-info, .linha-obs {
   background: #fafafa;
 }
 
-tr.linha-obs {
-  background: #f9f9f9;
+.linha-obs {
   border-bottom: 3px solid #ddd;
 }
 
-tr.linha-info td,
-tr.linha-obs td {
+.linha-info td, .linha-obs td {
   text-align: left;
-  padding: 12px 15px;
-  font-size: 14px;
 }
 
-tr.linha-info strong,
-tr.linha-obs strong {
-  color: #333;
-}
-
-/* =========================
-   🎨 STATUS (FINAL)
-========================= */
-select.status {
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  text-align: center;
+/* Status */
+.status {
   padding: 6px 10px;
   border-radius: 4px;
   font-weight: bold;
   border: none;
-  cursor: pointer;
 }
 
-/* 🔴 Recebido / Não feito */
 .status-recebido {
-  background-color: #f8d7da;
-  color: #721c24;
+  background: #f8d7da;
 }
 
-/* 🟡 Em produção */
 .status-producao {
-  background-color: #fff3cd;
-  color: #856404;
+  background: #fff3cd;
 }
 
-/* 🟢 Finalizado */
 .status-finalizado {
-  background-color: #d4edda;
-  color: #155724;
+  background: #d4edda;
 }
 
-/* =========================
-   📐 STATUS + EDITAR ALINHADOS
-========================= */
+/* Ações */
 .status-container {
   display: flex;
-  align-items: center;
-  justify-content: center;
   gap: 8px;
+  justify-content: center;
 }
 
-/* =========================
-   ✏️ BOTÃO EDITAR
-========================= */
 .btn-editar {
-  display: inline-block;
-  padding: 6px 12px;
-  background-color: #2d7ff9;
-  color: #ffffff !important;
+  padding: 6px 10px;
+  background: #2d7ff9;
+  color: #fff;
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  font-size: 13px;
-  font-weight: bold;
-  white-space: nowrap;
 }
 
-.btn-editar:hover {
-  background-color: #1f66d1;
-}
-
-/* =========================
-   🔹 INTERAÇÕES
-========================= */
-tbody tr:hover {
-  background: #f1f5ff;
-}
-
-/* =========================
-   📱 RESPONSIVO
-========================= */
-@media (max-width: 900px) {
-  .container {
-    padding: 20px;
-  }
-
-  table {
-    font-size: 13px;
-  }
-
-  th,
-  td {
-    padding: 8px;
-  }
-
-  .status-container {
-    flex-direction: column;
-  }
-}
+.btn-salvar { background: #28a745; }
+.btn-cancelar { background: #dc3545; }
