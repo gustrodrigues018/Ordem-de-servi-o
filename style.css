@@ -154,3 +154,20 @@ td {
 .painel-container {
   overflow-x: auto;
 }
+
+table {
+  table-layout: fixed;
+  width: 100%;
+}
+
+td {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+textarea {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
