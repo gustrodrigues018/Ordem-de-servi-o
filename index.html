@@ -17,8 +17,8 @@
   <label>Setor</label>
   <input type="text" id="setor" required>
 
-  <label>Link ou arquivo</label>
-  <input type="text" id="link">
+  <label>Link / Hashtag / Arquivo</label>
+  <input type="text" id="link" placeholder="Link do Drive, hashtag ou descrição">
 
   <label>Tipo de Comunicação</label>
   <select id="tipoComunicacao" required>
@@ -27,6 +27,7 @@
     <option>Etiqueta</option>
     <option>Banner</option>
     <option>Aviso Interno</option>
+    <option>Digital</option>
   </select>
 
   <label>Tipo de Material</label>
@@ -35,13 +36,22 @@
     <option>Papel</option>
     <option>Adesivo</option>
     <option>Lona</option>
+    <option>Outro</option>
   </select>
 
-  <label>Informações complementares</label>
+  <label>Informações complementares (medidas, cores, etc.)</label>
   <textarea id="info"></textarea>
+
+  <label>Observações gerais</label>
+  <textarea id="observacoes"></textarea>
+
+  <p class="aviso">
+    ⏳ Prazo de entrega: <strong>2 dias úteis</strong>
+  </p>
 
   <button type="submit">Enviar Ordem</button>
 </form>
+
 
 <!-- 🔴 SEM ISSO, NADA FUNCIONA -->
 <script type="module" src="script.js"></script>
