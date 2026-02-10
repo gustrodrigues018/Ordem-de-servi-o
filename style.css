@@ -1,3 +1,6 @@
+/* =========================
+   🔹 BASE GERAL
+========================= */
 body {
   font-family: Arial, sans-serif;
   background: #f4f6f8;
@@ -8,13 +11,20 @@ h1 {
   margin-bottom: 20px;
 }
 
+/* =========================
+   🔹 AVISOS
+========================= */
 .aviso {
   background: #fff3cd;
   padding: 12px;
   border-left: 5px solid #ffc107;
   margin-bottom: 20px;
+  font-size: 14px;
 }
 
+/* =========================
+   🔹 FORMULÁRIO
+========================= */
 form {
   background: #fff;
   padding: 20px;
@@ -28,14 +38,18 @@ label {
   font-weight: bold;
 }
 
-input, select, textarea {
+input,
+select,
+textarea {
   width: 100%;
   padding: 8px;
   margin-top: 5px;
+  font-family: inherit;
 }
 
 textarea {
   min-height: 80px;
+  resize: vertical;
 }
 
 button {
@@ -47,20 +61,105 @@ button {
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  font-size: 15px;
 }
 
+button:disabled {
+  background: #9bbcff;
+  cursor: not-allowed;
+}
+
+/* =========================
+   🔹 TABELA (PAINEL)
+========================= */
 table {
   width: 100%;
   background: #fff;
   border-collapse: collapse;
+  margin-top: 20px;
 }
 
-th, td {
+thead {
+  background: #f1f3f5;
+}
+
+th,
+td {
   padding: 10px;
   border-bottom: 1px solid #ddd;
   text-align: center;
+  font-size: 14px;
 }
 
+th {
+  font-weight: bold;
+}
+
+/* =========================
+   🔹 LINHAS POR ORDEM
+========================= */
+
+/* Linha principal */
+tr.linha-principal td {
+  background: #ffffff;
+  font-weight: 500;
+}
+
+/* Linha de informações */
+tr.linha-info {
+  background: #fafafa;
+}
+
+tr.linha-info td {
+  text-align: left;
+  padding: 10px 15px;
+  font-size: 14px;
+}
+
+/* Linha de observações */
+tr.linha-obs {
+  background: #f9f9f9;
+  border-bottom: 3px solid #ddd;
+}
+
+tr.linha-obs td {
+  text-align: left;
+  padding: 10px 15px;
+  font-size: 14px;
+}
+
+/* Destaque de rótulos */
+tr.linha-info strong,
+tr.linha-obs strong {
+  color: #333;
+}
+
+/* =========================
+   🔹 STATUS
+========================= */
 select.status {
   padding: 5px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* =========================
+   🔹 INTERAÇÕES
+========================= */
+tbody tr:hover {
+  background: #f1f5ff;
+}
+
+/* =========================
+   🔹 RESPONSIVO BÁSICO
+========================= */
+@media (max-width: 900px) {
+  table {
+    font-size: 13px;
+  }
+
+  th,
+  td {
+    padding: 8px;
+  }
 }
