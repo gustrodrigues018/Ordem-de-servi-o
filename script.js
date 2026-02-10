@@ -1,8 +1,15 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
-import { getDatabase, ref, push, onValue, update } 
-from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
+import {
+  getDatabase,
+  ref,
+  push,
+  onValue,
+  update
+} from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
 
-// 🔥 Firebase config
+/* ==========================
+   🔥 FIREBASE CONFIG
+========================== */
 const firebaseConfig = {
   apiKey: "AIzaSyC2PhF95pAkWIbDk4Z_PWHG1JWFVARVLQc",
   authDomain: "ordem-de-servico-af727.firebaseapp.com",
@@ -16,72 +23,94 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-// 📅 Prazo fixo +2 dias
+/* ==========================
+   📅 PRAZO FIXO (+2 DIAS)
+========================== */
 function calcularPrazo() {
   const d = new Date();
   d.setDate(d.getDate() + 2);
   return d.toISOString().split("T")[0];
 }
 
-// =======================
-// 📤 FORMULÁRIO
-// =======================
+/* ==========================
+   📤 FORMULÁRIO (index.html)
+========================== */
 const form = document.getElementById("osForm");
+let enviando = false;
 
 if (form) {
-  form.addEventListener("submit", e => {
+  const botaoEnviar = form.querySelector("button[type='submit']");
+
+  form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
+    // 🔒 trava total contra duplicação
+    if (enviando) return;
+    enviando = true;
+    if (botaoEnviar) botaoEnviar.disabled = true;
+
     const os = {
+      createdAt: Date.now(), // auditoria / debug
       dataCriacao: new Date().toLocaleString("pt-BR"),
-      solicitante: document.getElementById("solicitante").value,
-      setor: document.getElementById("setor").value,
-      link: document.getElementById("link").value,
+      solicitante: document.getElementById("solicitante").value.trim(),
+      setor: document.getElementById("setor").value.trim(),
+      link: document.getElementById("link").value.trim(),
       tipoComunicacao: document.getElementById("tipoComunicacao").value,
       material: document.getElementById("material").value,
-      info: document.getElementById("info").value,
-      observacoes: document.getElementById("observacoes").value,
+      info: document.getElementById("info").value.trim(),
+      observacoes: document.getElementById("observacoes").value.trim(),
       prazo: calcularPrazo(),
       status: "Recebido"
     };
 
-    push(ref(db, "ordens-servico"), os)
-      .then(() => {
-        alert("✅ Ordem enviada com sucesso!");
-        form.reset();
-      })
-      .catch(err => {
-        console.error(err);
-        alert("❌ Erro ao enviar");
-      });
+    try {
+      await push(ref(db, "ordens-servico"), os);
+      alert("✅ Ordem de serviço enviada com sucesso!");
+      form.reset();
+    } catch (error) {
+      console.error("Erro ao enviar:", error);
+      alert("❌ Erro ao enviar a ordem");
+    } finally {
+      enviando = false;
+      if (botaoEnviar) botaoEnviar.disabled = false;
+    }
   });
 }
 
-// =======================
-// 📥 PAINEL
-// =======================
+/* ==========================
+   📥 PAINEL (painel.html)
+========================== */
 const lista = document.getElementById("listaOS");
 
 if (lista) {
   const osRef = ref(db, "ordens-servico");
 
-  onValue(osRef, snapshot => {
+  onValue(osRef, (snapshot) => {
     lista.innerHTML = "";
 
-    snapshot.forEach(child => {
+    if (!snapshot.exists()) {
+      lista.innerHTML = `
+        <tr>
+          <td colspan="10">Nenhuma ordem registrada.</td>
+        </tr>
+      `;
+      return;
+    }
+
+    snapshot.forEach((child) => {
       const os = child.val();
       const id = child.key;
 
       const tr = document.createElement("tr");
       tr.innerHTML = `
-        <td>${os.dataCriacao}</td>
-        <td>${os.solicitante}</td>
-        <td>${os.setor}</td>
-        <td>${os.link}</td>
-        <td>${os.tipoComunicacao}</td>
-        <td>${os.material}</td>
-        <td>${os.info}</td>
-        <td>${os.prazo}</td>
+        <td>${os.dataCriacao || "-"}</td>
+        <td>${os.solicitante || "-"}</td>
+        <td>${os.setor || "-"}</td>
+        <td>${os.link || "-"}</td>
+        <td>${os.tipoComunicacao || "-"}</td>
+        <td>${os.material || "-"}</td>
+        <td>${os.info || "-"}</td>
+        <td>${os.prazo || "-"}</td>
         <td>
           <select class="status" data-id="${id}">
             <option ${os.status === "Recebido" ? "selected" : ""}>Recebido</option>
@@ -90,15 +119,17 @@ if (lista) {
             <option ${os.status === "Ajuste solicitado" ? "selected" : ""}>Ajuste solicitado</option>
           </select>
         </td>
-        <td>${os.observacoes}</td>
+        <td>${os.observacoes || "-"}</td>
       `;
 
       lista.appendChild(tr);
     });
 
-    document.querySelectorAll(".status").forEach(select => {
-      select.addEventListener("change", e => {
-        update(ref(db, `ordens-servico/${e.target.dataset.id}`), {
+    // 🔄 atualização de status
+    document.querySelectorAll(".status").forEach((select) => {
+      select.addEventListener("change", (e) => {
+        const id = e.target.dataset.id;
+        update(ref(db, `ordens-servico/${id}`), {
           status: e.target.value
         });
       });
