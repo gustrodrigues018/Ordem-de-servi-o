@@ -1,10 +1,20 @@
+/* =========================
+   BASE
+========================= */
+* {
+  box-sizing: border-box;
+}
+
 body {
   font-family: Arial, sans-serif;
   background: #f4f6f8;
   margin: 0;
+  padding: 0;
 }
 
-/* Containers */
+/* =========================
+   CONTAINERS
+========================= */
 .container {
   max-width: 800px;
   margin: auto;
@@ -12,17 +22,21 @@ body {
 }
 
 .painel-container {
-  width: 100%;
+  max-width: 100vw;
   padding: 30px;
 }
 
-/* Títulos */
+/* =========================
+   TÍTULOS
+========================= */
 h1 {
   text-align: center;
   margin-bottom: 20px;
 }
 
-/* Aviso */
+/* =========================
+   AVISO
+========================= */
 .aviso {
   background: #fff3cd;
   padding: 12px;
@@ -30,7 +44,9 @@ h1 {
   margin-bottom: 20px;
 }
 
-/* Form */
+/* =========================
+   FORM
+========================= */
 form {
   background: #fff;
   padding: 25px;
@@ -43,43 +59,70 @@ label {
   display: block;
 }
 
-input, select, textarea {
+input,
+select,
+textarea {
   width: 100%;
   padding: 8px;
   margin-top: 5px;
 }
 
+/* =========================
+   BOTÕES
+========================= */
 button {
-  margin-top: 20px;
-  padding: 12px;
-  width: 100%;
+  padding: 10px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.btn-editar {
   background: #2d7ff9;
   color: #fff;
-  border: none;
-  border-radius: 4px;
-  font-weight: bold;
-  cursor: pointer;
 }
 
-/* Tabela */
+.btn-salvar {
+  background: #28a745;
+  color: #fff;
+}
+
+.btn-cancelar {
+  background: #dc3545;
+  color: #fff;
+}
+
+/* =========================
+   TABELA (CORREÇÃO REAL)
+========================= */
 table {
   width: 100%;
-  background: #fff;
   border-collapse: collapse;
-}
-
-th, td {
-  padding: 10px;
-  border-bottom: 1px solid #ddd;
-  text-align: center;
+  background: #fff;
 }
 
 thead {
   background: #f1f3f5;
 }
 
-/* Linhas extras */
-.linha-info, .linha-obs {
+th,
+td {
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+  text-align: center;
+
+  /* 🔑 ISSO É O SEGREDO */
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+/* =========================
+   LINHAS EXTRAS
+========================= */
+.linha-info,
+.linha-obs {
   background: #fafafa;
 }
 
@@ -87,11 +130,14 @@ thead {
   border-bottom: 3px solid #ddd;
 }
 
-.linha-info td, .linha-obs td {
+.linha-info td,
+.linha-obs td {
   text-align: left;
 }
 
-/* Status */
+/* =========================
+   STATUS
+========================= */
 .status {
   padding: 6px 10px;
   border-radius: 4px;
@@ -111,63 +157,25 @@ thead {
   background: #d4edda;
 }
 
-/* Ações */
 .status-container {
   display: flex;
   gap: 8px;
   justify-content: center;
+  flex-wrap: wrap;
 }
 
-.btn-editar {
-  padding: 6px 10px;
-  background: #2d7ff9;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.btn-salvar { background: #28a745; }
-.btn-cancelar { background: #dc3545; }
-
-/* 🔒 Evita estourar largura da tela */
-table {
-  table-layout: fixed;
-  word-wrap: break-word;
-}
-
-td {
-  max-width: 100%;
-  overflow-wrap: break-word;
-}
-
-/* Textareas de edição */
+/* =========================
+   TEXTAREA (EDIÇÃO INLINE)
+========================= */
 .linha-info textarea,
 .linha-obs textarea {
   width: 100%;
   max-width: 100%;
-  box-sizing: border-box;
+  min-height: 80px;
   resize: vertical;
-}
 
-/* Painel nunca ultrapassa a tela */
-.painel-container {
-  overflow-x: auto;
+  /* 🔒 IMPEDIR ESTOURO */
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
 }
-
-table {
-  table-layout: fixed;
-  width: 100%;
-}
-
-td {
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-}
-
-textarea {
-  width: 100%;
-  max-width: 100%;
-  box-sizing: border-box;
-}
-
