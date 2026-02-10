@@ -122,7 +122,7 @@ onValue(osRef, (snapshot) => {
 });
 
 /* ==========================
-   🖱️ EVENT DELEGATION
+   🖱️ EVENT DELEGATION (EDITAR / SALVAR)
 ========================== */
 lista.addEventListener("click", (e) => {
   const btn = e.target.closest(".btn-editar");
@@ -136,10 +136,17 @@ lista.addEventListener("click", (e) => {
   const infoSpan = trInfo.querySelector(".info-text");
   const obsSpan = trObs.querySelector(".obs-text");
 
-  // SALVAR
+  /* 💾 SALVAR */
   if (btn.textContent === "Salvar") {
-    const novoInfo = trInfo.querySelector("textarea").value;
-    const novaObs = trObs.querySelector("textarea").value;
+    const infoTextarea = trInfo.querySelector("textarea");
+    const obsTextarea = trObs.querySelector("textarea");
+
+    const novoInfo = infoTextarea.value;
+    const novaObs = obsTextarea.value;
+
+    // 🔄 RESTAURA VISUAL IMEDIATA
+    infoSpan.textContent = novoInfo;
+    obsSpan.textContent = novaObs;
 
     update(ref(db, `ordens-servico/${id}`), {
       info: novoInfo,
@@ -151,7 +158,7 @@ lista.addEventListener("click", (e) => {
     return;
   }
 
-  // EDITAR
+  /* ✏️ EDITAR */
   if (editandoId && editandoId !== id) {
     alert("Finalize a edição atual primeiro.");
     return;
@@ -159,8 +166,17 @@ lista.addEventListener("click", (e) => {
 
   editandoId = id;
 
-  infoSpan.innerHTML = `<textarea style="width:100%">${infoSpan.textContent}</textarea>`;
-  obsSpan.innerHTML = `<textarea style="width:100%">${obsSpan.textContent}</textarea>`;
+  infoSpan.innerHTML = `
+    <textarea style="width:100%; max-width:100%; box-sizing:border-box;">
+      ${infoSpan.textContent}
+    </textarea>
+  `;
+
+  obsSpan.innerHTML = `
+    <textarea style="width:100%; max-width:100%; box-sizing:border-box;">
+      ${obsSpan.textContent}
+    </textarea>
+  `;
 
   btn.textContent = "Salvar";
 });
