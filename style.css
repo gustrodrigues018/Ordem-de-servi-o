@@ -4,11 +4,25 @@
 body {
   font-family: Arial, sans-serif;
   background: #f4f6f8;
+  margin: 0;
+  padding: 0;
+}
+
+/* =========================
+   🔹 CONTAINER (INDEX)
+========================= */
+.container {
+  max-width: 800px;
+  margin: 0 auto;
   padding: 30px;
 }
 
+/* =========================
+   🔹 TÍTULOS
+========================= */
 h1 {
   margin-bottom: 20px;
+  text-align: center;
 }
 
 /* =========================
@@ -20,6 +34,7 @@ h1 {
   border-left: 5px solid #ffc107;
   margin-bottom: 20px;
   font-size: 14px;
+  border-radius: 4px;
 }
 
 /* =========================
@@ -27,8 +42,7 @@ h1 {
 ========================= */
 form {
   background: #fff;
-  padding: 20px;
-  max-width: 700px;
+  padding: 25px;
   border-radius: 6px;
 }
 
@@ -45,6 +59,8 @@ textarea {
   padding: 8px;
   margin-top: 5px;
   font-family: inherit;
+  border: 1px solid #ccc;
+  border-radius: 4px;
 }
 
 textarea {
@@ -62,6 +78,11 @@ button {
   border-radius: 4px;
   cursor: pointer;
   font-size: 15px;
+  font-weight: bold;
+}
+
+button:hover {
+  background: #1f66d1;
 }
 
 button:disabled {
@@ -98,49 +119,82 @@ th {
 /* =========================
    🔹 LINHAS POR ORDEM
 ========================= */
-
-/* Linha principal */
 tr.linha-principal td {
   background: #ffffff;
   font-weight: 500;
 }
 
-/* Linha de informações */
+tr.linha-info td,
+tr.linha-obs td {
+  text-align: left;
+  padding: 12px 15px;
+  font-size: 14px;
+}
+
 tr.linha-info {
   background: #fafafa;
 }
 
-tr.linha-info td {
-  text-align: left;
-  padding: 10px 15px;
-  font-size: 14px;
-}
-
-/* Linha de observações */
 tr.linha-obs {
   background: #f9f9f9;
   border-bottom: 3px solid #ddd;
 }
 
-tr.linha-obs td {
-  text-align: left;
-  padding: 10px 15px;
-  font-size: 14px;
-}
-
-/* Destaque de rótulos */
 tr.linha-info strong,
 tr.linha-obs strong {
   color: #333;
 }
 
 /* =========================
-   🔹 STATUS
+   🎨 STATUS (FINAL)
 ========================= */
 select.status {
-  padding: 5px;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  text-align: center;
+  padding: 6px 10px;
+  border-radius: 4px;
   font-weight: bold;
+  border: none;
   cursor: pointer;
+}
+
+/* 🔴 Recebido / Não feito */
+.status-recebido {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+/* 🟡 Em produção */
+.status-producao {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+/* 🟢 Finalizado */
+.status-finalizado {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+/* =========================
+   ✏️ BOTÃO EDITAR
+========================= */
+.btn-editar {
+  display: inline-block;
+  padding: 6px 12px;
+  background-color: #2d7ff9;
+  color: #ffffff !important;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: bold;
+}
+
+.btn-editar:hover {
+  background-color: #1f66d1;
 }
 
 /* =========================
@@ -151,9 +205,13 @@ tbody tr:hover {
 }
 
 /* =========================
-   🔹 RESPONSIVO BÁSICO
+   📱 RESPONSIVO
 ========================= */
 @media (max-width: 900px) {
+  .container {
+    padding: 20px;
+  }
+
   table {
     font-size: 13px;
   }
@@ -162,90 +220,4 @@ tbody tr:hover {
   td {
     padding: 8px;
   }
-}
-
-/* =========================
-   🔹 CORES POR STATUS
-========================= */
-.status {
-  padding: 6px;
-  border-radius: 4px;
-  font-weight: bold;
-  border: none;
-}
-
-/* Não feito / Recebido */
-.status-recebido {
-  background: #f8d7da;
-  color: #721c24;
-}
-
-/* Em produção */
-.status-producao {
-  background: #fff3cd;
-  color: #856404;
-}
-
-/* Finalizado */
-.status-finalizado {
-  background: #d4edda;
-  color: #155724;
-}
-
-.btn-editar {
-  padding: 6px 10px;
-  background: #2d7ff9;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 13px;
-}
-
-.btn-editar:hover {
-  background: #1f66d1;
-}
-
-/* =========================
-   🎨 CORES POR STATUS
-========================= */
-
-.status {
-  padding: 6px 10px;
-  border-radius: 4px;
-  font-weight: bold;
-  border: none;
-}
-
-/* 🔴 Não feito / Recebido */
-.status-recebido {
-  background: #f8d7da;
-  color: #721c24;
-}
-
-/* 🟡 Em produção */
-.status-producao {
-  background: #fff3cd;
-  color: #856404;
-}
-
-/* 🟢 Finalizado */
-.status-finalizado {
-  background: #d4edda;
-  color: #155724;
-}
-
-/* Botão editar */
-.btn-editar {
-  padding: 6px 10px;
-  background: #2d7ff9;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 13px;
-}
-
-.btn-editar:hover {
-  background: #1f66d1;
 }
