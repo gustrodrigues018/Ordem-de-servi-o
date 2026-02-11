@@ -9,7 +9,7 @@ html, body {
   width: 100%;
   margin: 0;
   padding: 0;
-  overflow-x: hidden; /* 🔒 impede scroll lateral */
+  overflow-x: hidden;
 }
 
 body {
@@ -18,19 +18,16 @@ body {
 }
 
 /* =========================
-   CONTAINERS (CORRIGIDO)
+   CONTAINERS
 ========================= */
 
 .container {
   width: 100%;
-  max-width: 100%;
-  margin: 0;
   padding: 30px;
 }
 
 .painel-container {
   width: 100%;
-  max-width: 100%;
   padding: 30px;
 }
 
@@ -115,14 +112,13 @@ button {
 }
 
 /* =========================
-   TABELA (100% REAL)
+   TABELA CORRETA
 ========================= */
 
 table {
   width: 100%;
   border-collapse: collapse;
   background: #fff;
-  table-layout: fixed; /* 🔑 estabiliza largura */
 }
 
 thead {
@@ -131,9 +127,10 @@ thead {
 
 th,
 td {
-  padding: 12px;
+  padding: 14px 16px;
   border-bottom: 1px solid #ddd;
   text-align: center;
+  vertical-align: top;
 
   word-break: break-word;
   overflow-wrap: anywhere;
@@ -141,7 +138,7 @@ td {
 }
 
 /* =========================
-   LINHAS EXTRAS
+   LINHAS DETALHES
 ========================= */
 
 .linha-info,
@@ -153,9 +150,12 @@ td {
   border-bottom: 3px solid #ddd;
 }
 
+/* 🔥 FORÇA OCUPAR 100% REAL */
 .linha-info td,
 .linha-obs td {
   text-align: left;
+  width: 100%;
+  padding: 16px 20px;
 }
 
 /* =========================
@@ -195,7 +195,6 @@ td {
 .linha-info textarea,
 .linha-obs textarea {
   width: 100%;
-  max-width: 100%;
   min-height: 90px;
   resize: vertical;
 
