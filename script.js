@@ -84,12 +84,14 @@ function render(snapshot) {
     const id = child.key;
     const emEdicao = editandoId === id;
 
-    /* 🔗 MULTIPLOS LINKS */
+    /* 🔗 MULTIPLOS LINKS (VERSÃO MELHORADA) */
     let linksHTML = "";
 
     if (!emEdicao && o.link) {
+
+      // Divide por ENTER, espaço, vírgula ou ponto e vírgula
       const linksArray = o.link
-        .split("\n")
+        .split(/\s+|,|;/)
         .map(l => l.trim())
         .filter(l => l !== "");
 
@@ -143,7 +145,7 @@ function render(snapshot) {
                 </textarea>
 
                 <br><br>
-                <strong>Links (um por linha):</strong>
+                <strong>Links (um por linha, espaço, vírgula ou ponto e vírgula):</strong>
                 <textarea class="edit-link" data-id="${id}" 
                   style="width:100%; box-sizing:border-box;">
                   ${o.link || ""}
