@@ -66,11 +66,12 @@ textarea {
 ========================= */
 
 button {
-  padding: 10px 14px;
+  padding: 8px 14px;
   border-radius: 6px;
   border: none;
   cursor: pointer;
   font-weight: bold;
+  font-size: 14px;
 }
 
 .btn-editar {
@@ -109,7 +110,7 @@ th {
   padding: 14px 16px;
   border-bottom: 2px solid #ddd;
   text-align: center;
-  white-space: nowrap; /* 🔥 impede quebrar cabeçalho */
+  white-space: nowrap;
 }
 
 td {
@@ -120,7 +121,7 @@ td {
 }
 
 /* =========================
-   TEXTO LONGO (SÓ ONDE PRECISA)
+   TEXTO LONGO
 ========================= */
 
 .linha-info td,
@@ -145,16 +146,25 @@ td {
 }
 
 /* =========================
-   STATUS
+   STATUS + AÇÕES ORGANIZADO
 ========================= */
 
-.status {
-  padding: 6px 10px;
-  border-radius: 6px;
-  font-weight: bold;
-  border: none;
+.status-container {
+  display: flex;
+  flex-direction: column; /* 🔥 agora fica vertical */
+  align-items: center;
+  gap: 12px;
 }
 
+/* campo recebido menor */
+.status-container select {
+  width: 150px; /* 🔥 controla tamanho */
+  text-align: center;
+  padding: 6px;
+  border-radius: 6px;
+}
+
+/* cores */
 .status-recebido {
   background: #f8d7da;
 }
@@ -167,12 +177,10 @@ td {
   background: #d4edda;
 }
 
-.status-container {
+/* botões abaixo do status */
+.status-botoes {
   display: flex;
   gap: 10px;
-  justify-content: center;
-  align-items: center;
-  flex-wrap: wrap;
 }
 
 /* =========================
