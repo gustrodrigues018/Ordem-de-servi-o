@@ -76,9 +76,10 @@ const lista = document.getElementById("listaOS");
 const osRef = ref(db, "ordens-servico");
 
 let editandoId = null;
+let ultimoSnapshot = null;
 
 /* ==========================
-   🔄 RENDER
+   🔗 GERAR LINKS
 ========================== */
 
 function gerarLinksHTML(linkString) {
@@ -107,8 +108,13 @@ function gerarLinksHTML(linkString) {
   `;
 }
 
+/* ==========================
+   🔄 RENDER
+========================== */
+
 function render(snapshot) {
   lista.innerHTML = "";
+  ultimoSnapshot = snapshot;
 
   snapshot.forEach((child) => {
     const o = child.val();
@@ -202,10 +208,12 @@ lista.addEventListener("click", async (e) => {
       });
 
       editandoId = null;
+
     } else {
       editandoId = id;
     }
 
+    render(ultimoSnapshot); // 🔥 força render imediato
     return;
   }
 
