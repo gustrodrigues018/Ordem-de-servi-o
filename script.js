@@ -76,42 +76,44 @@ const lista = document.getElementById("listaOS");
 const osRef = ref(db, "ordens-servico");
 
 let editandoId = null;
-let ultimoSnapshot = null;
 
-/* 🔄 RENDER */
+/* ==========================
+   🔄 RENDER
+========================== */
+
+function gerarLinksHTML(linkString) {
+  if (!linkString) return "";
+
+  const linksArray = linkString
+    .split(/\n|,|;/)
+    .map(l => l.trim())
+    .filter(l => l !== "");
+
+  if (!linksArray.length) return "";
+
+  return `
+    <br><strong>Links:</strong><br>
+    ${linksArray.map(l => {
+      const url = l.startsWith("http") ? l : "https://" + l;
+      return `
+        <a href="${url}" 
+           target="_blank" 
+           rel="noopener noreferrer"
+           style="display:block; margin-top:4px;">
+           🔗 ${l}
+        </a>
+      `;
+    }).join("")}
+  `;
+}
+
 function render(snapshot) {
-  ultimoSnapshot = snapshot;
   lista.innerHTML = "";
 
   snapshot.forEach((child) => {
     const o = child.val();
     const id = child.key;
     const emEdicao = editandoId === id;
-
-    /* 🔗 MULTIPLOS LINKS */
-    let linksHTML = "";
-
-    if (!emEdicao && o.link) {
-      const linksArray = o.link
-        .split(/\n|,|;/)
-        .map(l => l.trim())
-        .filter(l => l !== "");
-
-      linksHTML = `
-        <br><strong>Links:</strong><br>
-        ${linksArray.map(l => {
-          const url = l.startsWith("http") ? l : "https://" + l;
-          return `
-            <a href="${url}"
-               target="_blank"
-               rel="noopener noreferrer"
-               style="display:block; margin-top:4px;">
-               🔗 ${l}
-            </a>
-          `;
-        }).join("")}
-      `;
-    }
 
     lista.insertAdjacentHTML("beforeend", `
       <tr class="linha-principal">
@@ -128,8 +130,13 @@ function render(snapshot) {
               <option ${o.status === "Em produção" ? "selected" : ""}>Em produção</option>
               <option ${o.status === "Finalizado" ? "selected" : ""}>Finalizado</option>
             </select>
+
             <button class="btn-editar" data-id="${id}">
               ${emEdicao ? "Salvar" : "Editar"}
+            </button>
+
+            <button class="btn-excluir" data-id="${id}">
+              Excluir
             </button>
           </div>
         </td>
@@ -141,21 +148,14 @@ function render(snapshot) {
           ${
             emEdicao
               ? `
-                <textarea class="edit-info" data-id="${id}" 
-                  style="width:100%; box-sizing:border-box;">
-                  ${o.info || ""}
-                </textarea>
-
+                <textarea class="edit-info" data-id="${id}" style="width:100%; box-sizing:border-box;">${o.info || ""}</textarea>
                 <br><br>
-                <strong>Links (um por linha):</strong>
-                <textarea class="edit-link" data-id="${id}" 
-                  style="width:100%; box-sizing:border-box;">
-                  ${o.link || ""}
-                </textarea>
+                <strong>Links (um por linha, vírgula ou ;):</strong>
+                <textarea class="edit-link" data-id="${id}" style="width:100%; box-sizing:border-box;">${o.link || ""}</textarea>
               `
               : `
                 <span>${o.info || ""}</span>
-                ${linksHTML}
+                ${gerarLinksHTML(o.link)}
               `
           }
         </td>
@@ -166,10 +166,7 @@ function render(snapshot) {
           <strong>Observações:</strong>
           ${
             emEdicao
-              ? `<textarea class="edit-obs" data-id="${id}" 
-                   style="width:100%; box-sizing:border-box;">
-                   ${o.observacoes || ""}
-                 </textarea>`
+              ? `<textarea class="edit-obs" data-id="${id}" style="width:100%; box-sizing:border-box;">${o.observacoes || ""}</textarea>`
               : `<span>${o.observacoes || ""}</span>`
           }
         </td>
@@ -183,39 +180,50 @@ onValue(osRef, (snapshot) => {
 });
 
 /* ==========================
-   🖱️ CLICK (EDITAR / SALVAR)
+   🖱️ CLICK (EDITAR / SALVAR / EXCLUIR)
 ========================== */
 
 lista.addEventListener("click", async (e) => {
-  const btn = e.target.closest(".btn-editar");
-  if (!btn) return;
 
-  const id = btn.dataset.id;
+  /* EDITAR / SALVAR */
+  const btnEditar = e.target.closest(".btn-editar");
+  if (btnEditar) {
+    const id = btnEditar.dataset.id;
 
-  // 🔁 SALVAR
-  if (editandoId === id) {
+    if (editandoId === id) {
+      const novoInfo = document.querySelector(`.edit-info[data-id="${id}"]`).value;
+      const novaObs = document.querySelector(`.edit-obs[data-id="${id}"]`).value;
+      const novoLink = document.querySelector(`.edit-link[data-id="${id}"]`).value;
 
-    const novoInfo = document.querySelector(`.edit-info[data-id="${id}"]`).value;
-    const novaObs = document.querySelector(`.edit-obs[data-id="${id}"]`).value;
-    const novoLink = document.querySelector(`.edit-link[data-id="${id}"]`).value;
+      await update(ref(db, `ordens-servico/${id}`), {
+        info: novoInfo,
+        observacoes: novaObs,
+        link: novoLink
+      });
 
-    await update(ref(db, `ordens-servico/${id}`), {
-      info: novoInfo,
-      observacoes: novaObs,
-      link: novoLink
-    });
-
-    editandoId = null;
-
-    // 🔥 FORÇA RENDER IMEDIATO
-    render(ultimoSnapshot);
+      editandoId = null;
+    } else {
+      editandoId = id;
+    }
 
     return;
   }
 
-  // ✏️ ENTRAR EM EDIÇÃO
-  editandoId = id;
-  render(ultimoSnapshot);
+  /* EXCLUIR */
+  const btnExcluir = e.target.closest(".btn-excluir");
+  if (btnExcluir) {
+    const id = btnExcluir.dataset.id;
+
+    const confirmar = confirm("Tem certeza que deseja excluir esta ordem?");
+    if (!confirmar) return;
+
+    await remove(ref(db, `ordens-servico/${id}`));
+
+    if (editandoId === id) {
+      editandoId = null;
+    }
+  }
+
 });
 
 /* ==========================
