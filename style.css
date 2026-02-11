@@ -5,24 +5,32 @@
   box-sizing: border-box;
 }
 
+html, body {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden; /* 🔒 impede scroll lateral */
+}
+
 body {
   font-family: Arial, sans-serif;
   background: #f4f6f8;
-  margin: 0;
-  padding: 0;
 }
 
 /* =========================
-   CONTAINERS
+   CONTAINERS (CORRIGIDO)
 ========================= */
+
 .container {
-  max-width: 800px;
-  margin: auto;
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
   padding: 30px;
 }
 
 .painel-container {
-  max-width: 100vw;
+  width: 100%;
+  max-width: 100%;
   padding: 30px;
 }
 
@@ -31,7 +39,7 @@ body {
 ========================= */
 h1 {
   text-align: center;
-  margin-bottom: 20px;
+  margin-bottom: 25px;
 }
 
 /* =========================
@@ -71,7 +79,7 @@ textarea {
    BOTÕES
 ========================= */
 button {
-  padding: 10px;
+  padding: 10px 14px;
   border-radius: 4px;
   border: none;
   cursor: pointer;
@@ -83,23 +91,38 @@ button {
   color: #fff;
 }
 
+.btn-editar:hover {
+  background: #1f63cc;
+}
+
+.btn-excluir {
+  background: #dc3545;
+  color: #fff;
+}
+
+.btn-excluir:hover {
+  background: #b02a37;
+}
+
 .btn-salvar {
   background: #28a745;
   color: #fff;
 }
 
 .btn-cancelar {
-  background: #dc3545;
+  background: #6c757d;
   color: #fff;
 }
 
 /* =========================
-   TABELA (CORREÇÃO REAL)
+   TABELA (100% REAL)
 ========================= */
+
 table {
   width: 100%;
   border-collapse: collapse;
   background: #fff;
+  table-layout: fixed; /* 🔑 estabiliza largura */
 }
 
 thead {
@@ -108,11 +131,10 @@ thead {
 
 th,
 td {
-  padding: 10px;
+  padding: 12px;
   border-bottom: 1px solid #ddd;
   text-align: center;
 
-  /* 🔑 ISSO É O SEGREDO */
   word-break: break-word;
   overflow-wrap: anywhere;
   white-space: normal;
@@ -121,6 +143,7 @@ td {
 /* =========================
    LINHAS EXTRAS
 ========================= */
+
 .linha-info,
 .linha-obs {
   background: #fafafa;
@@ -138,6 +161,7 @@ td {
 /* =========================
    STATUS
 ========================= */
+
 .status {
   padding: 6px 10px;
   border-radius: 4px;
@@ -167,30 +191,15 @@ td {
 /* =========================
    TEXTAREA (EDIÇÃO INLINE)
 ========================= */
+
 .linha-info textarea,
 .linha-obs textarea {
   width: 100%;
   max-width: 100%;
-  min-height: 80px;
+  min-height: 90px;
   resize: vertical;
 
-  /* 🔒 IMPEDIR ESTOURO */
   word-break: break-word;
   overflow-wrap: anywhere;
   white-space: pre-wrap;
-}
-
-
-.btn-excluir {
-  padding: 6px 10px;
-  background: #dc3545;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-weight: bold;
-}
-
-.btn-excluir:hover {
-  background: #b02a37;
 }
