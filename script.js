@@ -12,7 +12,7 @@ import {
    🔥 FIREBASE CONFIG
 ========================== */
 const firebaseConfig = {
-  apiKey: "AIzaSyC2PhF95pAkWIbDk4Z_PWHG1JWFVARVLQc",
+  apiKey: "SUA_KEY",
   authDomain: "ordem-de-servico-af727.firebaseapp.com",
   databaseURL: "https://ordem-de-servico-af727-default-rtdb.firebaseio.com",
   projectId: "ordem-de-servico-af727",
@@ -25,7 +25,7 @@ const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
 /* ==========================
-   📅 PRAZO FIXO
+   PRAZO
 ========================== */
 function calcularPrazo() {
   const d = new Date();
@@ -34,7 +34,7 @@ function calcularPrazo() {
 }
 
 /* ==========================
-   🎨 STATUS
+   STATUS CLASS
 ========================== */
 function classeStatus(status) {
   if (status === "Finalizado") return "status status-finalizado";
@@ -43,7 +43,7 @@ function classeStatus(status) {
 }
 
 /* ==========================
-   📤 FORMULÁRIO
+   FORM
 ========================== */
 const form = document.getElementById("osForm");
 
@@ -69,19 +69,17 @@ if (form) {
 }
 
 /* ==========================
-   📥 PAINEL
+   PAINEL
 ========================== */
 
 const lista = document.getElementById("listaOS");
 const osRef = ref(db, "ordens-servico");
 
 let editandoId = null;
-let ultimoSnapshot = null;
 
 /* ==========================
-   🔗 GERAR LINKS
+   GERAR LINKS
 ========================== */
-
 function gerarLinksHTML(linkString) {
   if (!linkString) return "";
 
@@ -90,18 +88,13 @@ function gerarLinksHTML(linkString) {
     .map(l => l.trim())
     .filter(l => l !== "");
 
-  if (!linksArray.length) return "";
-
   return `
     <br><strong>Links:</strong><br>
     ${linksArray.map(l => {
       const url = l.startsWith("http") ? l : "https://" + l;
       return `
-        <a href="${url}" 
-           target="_blank" 
-           rel="noopener noreferrer"
-           style="display:block; margin-top:4px;">
-           🔗 ${l}
+        <a href="${url}" target="_blank" rel="noopener noreferrer" style="display:block; margin-top:4px;">
+          🔗 ${l}
         </a>
       `;
     }).join("")}
@@ -109,12 +102,10 @@ function gerarLinksHTML(linkString) {
 }
 
 /* ==========================
-   🔄 RENDER
+   RENDER
 ========================== */
-
 function render(snapshot) {
   lista.innerHTML = "";
-  ultimoSnapshot = snapshot;
 
   snapshot.forEach((child) => {
     const o = child.val();
@@ -122,21 +113,26 @@ function render(snapshot) {
     const emEdicao = editandoId === id;
 
     lista.insertAdjacentHTML("beforeend", `
-      <tr class="linha-principal">
+      <tr>
         <td>${o.dataCriacao}</td>
         <td>${o.solicitante}</td>
         <td>${o.setor}</td>
         <td>${o.tipoComunicacao}</td>
         <td>${o.material}</td>
         <td>${o.prazo}</td>
-        <td>
-          <div class="status-container">
-            <select class="${classeStatus(o.status)} status" data-id="${id}">
-              <option ${o.status === "Recebido" ? "selected" : ""}>Recebido</option>
-              <option ${o.status === "Em produção" ? "selected" : ""}>Em produção</option>
-              <option ${o.status === "Finalizado" ? "selected" : ""}>Finalizado</option>
-            </select>
 
+        <!-- STATUS -->
+        <td>
+          <select class="${classeStatus(o.status)} status" data-id="${id}">
+            <option ${o.status === "Recebido" ? "selected" : ""}>Recebido</option>
+            <option ${o.status === "Em produção" ? "selected" : ""}>Em produção</option>
+            <option ${o.status === "Finalizado" ? "selected" : ""}>Finalizado</option>
+          </select>
+        </td>
+
+        <!-- AÇÕES -->
+        <td>
+          <div class="acoes-container">
             <button class="btn-editar" data-id="${id}">
               ${emEdicao ? "Salvar" : "Editar"}
             </button>
@@ -149,15 +145,15 @@ function render(snapshot) {
       </tr>
 
       <tr class="linha-info">
-        <td colspan="7">
+        <td colspan="8">
           <strong>Informações:</strong>
           ${
             emEdicao
               ? `
-                <textarea class="edit-info" data-id="${id}" style="width:100%; box-sizing:border-box;">${o.info || ""}</textarea>
+                <textarea class="edit-info" data-id="${id}">${o.info || ""}</textarea>
                 <br><br>
-                <strong>Links (um por linha, vírgula ou ;):</strong>
-                <textarea class="edit-link" data-id="${id}" style="width:100%; box-sizing:border-box;">${o.link || ""}</textarea>
+                <strong>Links:</strong>
+                <textarea class="edit-link" data-id="${id}">${o.link || ""}</textarea>
               `
               : `
                 <span>${o.info || ""}</span>
@@ -168,11 +164,11 @@ function render(snapshot) {
       </tr>
 
       <tr class="linha-obs">
-        <td colspan="7">
+        <td colspan="8">
           <strong>Observações:</strong>
           ${
             emEdicao
-              ? `<textarea class="edit-obs" data-id="${id}" style="width:100%; box-sizing:border-box;">${o.observacoes || ""}</textarea>`
+              ? `<textarea class="edit-obs" data-id="${id}">${o.observacoes || ""}</textarea>`
               : `<span>${o.observacoes || ""}</span>`
           }
         </td>
@@ -181,14 +177,11 @@ function render(snapshot) {
   });
 }
 
-onValue(osRef, (snapshot) => {
-  render(snapshot);
-});
+onValue(osRef, render);
 
 /* ==========================
-   🖱️ CLICK (EDITAR / SALVAR / EXCLUIR)
+   CLICK
 ========================== */
-
 lista.addEventListener("click", async (e) => {
 
   /* EDITAR / SALVAR */
@@ -208,12 +201,10 @@ lista.addEventListener("click", async (e) => {
       });
 
       editandoId = null;
-
     } else {
       editandoId = id;
     }
 
-    render(ultimoSnapshot); // 🔥 força render imediato
     return;
   }
 
@@ -226,23 +217,16 @@ lista.addEventListener("click", async (e) => {
     if (!confirmar) return;
 
     await remove(ref(db, `ordens-servico/${id}`));
-
-    if (editandoId === id) {
-      editandoId = null;
-    }
   }
 
 });
 
 /* ==========================
-   🔄 STATUS
+   STATUS CHANGE
 ========================== */
-
 lista.addEventListener("change", (e) => {
   if (!e.target.classList.contains("status")) return;
 
   const id = e.target.dataset.id;
-  const novoStatus = e.target.value;
-
-  update(ref(db, `ordens-servico/${id}`), { status: novoStatus });
+  update(ref(db, `ordens-servico/${id}`), { status: e.target.value });
 });
