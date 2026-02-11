@@ -5,7 +5,8 @@ import {
   push,
   onValue,
   update,
-  remove
+  remove,
+  get
 } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
 
 /* ==========================
@@ -76,6 +77,7 @@ const lista = document.getElementById("listaOS");
 const osRef = ref(db, "ordens-servico");
 
 let editandoId = null;
+let ultimoSnapshot = null;
 
 /* ==========================
    GERAR LINKS
@@ -87,6 +89,8 @@ function gerarLinksHTML(linkString) {
     .split(/\n|,|;/)
     .map(l => l.trim())
     .filter(l => l !== "");
+
+  if (!linksArray.length) return "";
 
   return `
     <br><strong>Links:</strong><br>
@@ -106,6 +110,7 @@ function gerarLinksHTML(linkString) {
 ========================== */
 function render(snapshot) {
   lista.innerHTML = "";
+  ultimoSnapshot = snapshot;
 
   snapshot.forEach((child) => {
     const o = child.val();
@@ -121,7 +126,6 @@ function render(snapshot) {
         <td>${o.material}</td>
         <td>${o.prazo}</td>
 
-        <!-- STATUS -->
         <td>
           <select class="${classeStatus(o.status)} status" data-id="${id}">
             <option ${o.status === "Recebido" ? "selected" : ""}>Recebido</option>
@@ -130,7 +134,6 @@ function render(snapshot) {
           </select>
         </td>
 
-        <!-- AÇÕES -->
         <td>
           <div class="acoes-container">
             <button class="btn-editar" data-id="${id}">
@@ -184,7 +187,6 @@ onValue(osRef, render);
 ========================== */
 lista.addEventListener("click", async (e) => {
 
-  /* EDITAR / SALVAR */
   const btnEditar = e.target.closest(".btn-editar");
   if (btnEditar) {
     const id = btnEditar.dataset.id;
@@ -201,14 +203,18 @@ lista.addEventListener("click", async (e) => {
       });
 
       editandoId = null;
+
     } else {
       editandoId = id;
     }
 
+    // 🔥 FORÇA RENDER IMEDIATO
+    const snapshot = await get(osRef);
+    render(snapshot);
+
     return;
   }
 
-  /* EXCLUIR */
   const btnExcluir = e.target.closest(".btn-excluir");
   if (btnExcluir) {
     const id = btnExcluir.dataset.id;
@@ -218,7 +224,6 @@ lista.addEventListener("click", async (e) => {
 
     await remove(ref(db, `ordens-servico/${id}`));
   }
-
 });
 
 /* ==========================
