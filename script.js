@@ -82,12 +82,32 @@ function render(snapshot) {
   snapshot.forEach((child) => {
     const o = child.val();
     const id = child.key;
-
-    const linkUrl = o.link
-      ? (o.link.startsWith("http") ? o.link : "https://" + o.link)
-      : "";
-
     const emEdicao = editandoId === id;
+
+    /* 🔗 MULTIPLOS LINKS */
+    let linksHTML = "";
+
+    if (!emEdicao && o.link) {
+      const linksArray = o.link
+        .split("\n")
+        .map(l => l.trim())
+        .filter(l => l !== "");
+
+      linksHTML = `
+        <br><strong>Links:</strong><br>
+        ${linksArray.map(l => {
+          const url = l.startsWith("http") ? l : "https://" + l;
+          return `
+            <a href="${url}"
+               target="_blank"
+               rel="noopener noreferrer"
+               style="display:block; margin-top:4px;">
+               🔗 ${l}
+            </a>
+          `;
+        }).join("")}
+      `;
+    }
 
     lista.insertAdjacentHTML("beforeend", `
       <tr class="linha-principal">
@@ -116,17 +136,23 @@ function render(snapshot) {
           <strong>Informações:</strong>
           ${
             emEdicao
-              ? `<textarea class="edit-info" data-id="${id}" style="width:100%; box-sizing:border-box;">${o.info || ""}</textarea>
-                 <br><br>
-                 <strong>Link:</strong>
-                 <input type="text" class="edit-link" data-id="${id}" value="${o.link || ""}" style="width:100%; box-sizing:border-box;">`
-              : `<span>${o.info || ""}</span>
-                 ${
-                   linkUrl
-                     ? `<br><strong>Link:</strong>
-                        <a href="${linkUrl}" target="_blank">${o.link}</a>`
-                     : ""
-                 }`
+              ? `
+                <textarea class="edit-info" data-id="${id}" 
+                  style="width:100%; box-sizing:border-box;">
+                  ${o.info || ""}
+                </textarea>
+
+                <br><br>
+                <strong>Links (um por linha):</strong>
+                <textarea class="edit-link" data-id="${id}" 
+                  style="width:100%; box-sizing:border-box;">
+                  ${o.link || ""}
+                </textarea>
+              `
+              : `
+                <span>${o.info || ""}</span>
+                ${linksHTML}
+              `
           }
         </td>
       </tr>
@@ -136,7 +162,10 @@ function render(snapshot) {
           <strong>Observações:</strong>
           ${
             emEdicao
-              ? `<textarea class="edit-obs" data-id="${id}" style="width:100%; box-sizing:border-box;">${o.observacoes || ""}</textarea>`
+              ? `<textarea class="edit-obs" data-id="${id}" 
+                   style="width:100%; box-sizing:border-box;">
+                   ${o.observacoes || ""}
+                 </textarea>`
               : `<span>${o.observacoes || ""}</span>`
           }
         </td>
@@ -150,7 +179,7 @@ onValue(osRef, (snapshot) => {
 });
 
 /* ==========================
-   🖱️ CLICK
+   🖱️ CLICK (EDITAR / SALVAR)
 ========================== */
 
 lista.addEventListener("click", async (e) => {
