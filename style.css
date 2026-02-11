@@ -24,7 +24,6 @@ body {
 .container,
 .painel-container {
   width: 100%;
-  margin: 0;
   padding: 30px;
 }
 
@@ -72,6 +71,7 @@ button {
   cursor: pointer;
   font-weight: bold;
   font-size: 14px;
+  min-width: 90px;
 }
 
 .btn-editar {
@@ -117,7 +117,7 @@ td {
   padding: 14px 16px;
   border-bottom: 1px solid #ddd;
   text-align: center;
-  vertical-align: top;
+  vertical-align: middle;
 }
 
 /* =========================
@@ -146,22 +146,16 @@ td {
 }
 
 /* =========================
-   STATUS + AÇÕES ORGANIZADO
+   STATUS (COLUNA STATUS)
 ========================= */
 
-.status-container {
-  display: flex;
-  flex-direction: column; /* 🔥 agora fica vertical */
-  align-items: center;
-  gap: 12px;
-}
-
-/* campo recebido menor */
-.status-container select {
-  width: 150px; /* 🔥 controla tamanho */
-  text-align: center;
+.status {
+  width: 140px;
   padding: 6px;
   border-radius: 6px;
+  font-weight: bold;
+  text-align: center;
+  border: 1px solid #ccc;
 }
 
 /* cores */
@@ -177,10 +171,15 @@ td {
   background: #d4edda;
 }
 
-/* botões abaixo do status */
-.status-botoes {
+/* =========================
+   AÇÕES (COLUNA AÇÕES)
+========================= */
+
+.acoes-container {
   display: flex;
+  flex-direction: column;
   gap: 10px;
+  align-items: center;
 }
 
 /* =========================
