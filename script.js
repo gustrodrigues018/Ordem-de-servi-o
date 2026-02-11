@@ -75,8 +75,11 @@ const lista = document.getElementById("listaOS");
 const osRef = ref(db, "ordens-servico");
 
 let editandoId = null;
+let ultimoSnapshot = null;
 
+/* 🔄 RENDER */
 function render(snapshot) {
+  ultimoSnapshot = snapshot;
   lista.innerHTML = "";
 
   snapshot.forEach((child) => {
@@ -84,14 +87,12 @@ function render(snapshot) {
     const id = child.key;
     const emEdicao = editandoId === id;
 
-    /* 🔗 MULTIPLOS LINKS (VERSÃO MELHORADA) */
+    /* 🔗 MULTIPLOS LINKS */
     let linksHTML = "";
 
     if (!emEdicao && o.link) {
-
-      // Divide por ENTER, espaço, vírgula ou ponto e vírgula
       const linksArray = o.link
-        .split(/\s+|,|;/)
+        .split(/\n|,|;/)
         .map(l => l.trim())
         .filter(l => l !== "");
 
@@ -145,7 +146,7 @@ function render(snapshot) {
                 </textarea>
 
                 <br><br>
-                <strong>Links (um por linha, espaço, vírgula ou ponto e vírgula):</strong>
+                <strong>Links (um por linha):</strong>
                 <textarea class="edit-link" data-id="${id}" 
                   style="width:100%; box-sizing:border-box;">
                   ${o.link || ""}
@@ -190,7 +191,9 @@ lista.addEventListener("click", async (e) => {
 
   const id = btn.dataset.id;
 
+  // 🔁 SALVAR
   if (editandoId === id) {
+
     const novoInfo = document.querySelector(`.edit-info[data-id="${id}"]`).value;
     const novaObs = document.querySelector(`.edit-obs[data-id="${id}"]`).value;
     const novoLink = document.querySelector(`.edit-link[data-id="${id}"]`).value;
@@ -202,9 +205,16 @@ lista.addEventListener("click", async (e) => {
     });
 
     editandoId = null;
-  } else {
-    editandoId = id;
+
+    // 🔥 FORÇA RENDER IMEDIATO
+    render(ultimoSnapshot);
+
+    return;
   }
+
+  // ✏️ ENTRAR EM EDIÇÃO
+  editandoId = id;
+  render(ultimoSnapshot);
 });
 
 /* ==========================
