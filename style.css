@@ -179,3 +179,18 @@ td {
   overflow-wrap: anywhere;
   white-space: pre-wrap;
 }
+
+
+.btn-excluir {
+  padding: 6px 10px;
+  background: #dc3545;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.btn-excluir:hover {
+  background: #b02a37;
+}
