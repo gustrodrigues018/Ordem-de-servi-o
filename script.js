@@ -63,7 +63,6 @@ if (form) {
       status: "Recebido"
     });
 
-    alert("✅ Ordem enviada");
     form.reset();
   });
 }
@@ -71,13 +70,13 @@ if (form) {
 /* ==========================
    📥 PAINEL
 ========================== */
+
 const lista = document.getElementById("listaOS");
 const osRef = ref(db, "ordens-servico");
 
 let editandoId = null;
 
-/* 🔄 RENDER */
-onValue(osRef, (snapshot) => {
+function render(snapshot) {
   lista.innerHTML = "";
 
   snapshot.forEach((child) => {
@@ -88,8 +87,10 @@ onValue(osRef, (snapshot) => {
       ? (o.link.startsWith("http") ? o.link : "https://" + o.link)
       : "";
 
+    const emEdicao = editandoId === id;
+
     lista.insertAdjacentHTML("beforeend", `
-      <tr class="linha-principal" data-id="${id}">
+      <tr class="linha-principal">
         <td>${o.dataCriacao}</td>
         <td>${o.solicitante}</td>
         <td>${o.setor}</td>
@@ -103,99 +104,82 @@ onValue(osRef, (snapshot) => {
               <option ${o.status === "Em produção" ? "selected" : ""}>Em produção</option>
               <option ${o.status === "Finalizado" ? "selected" : ""}>Finalizado</option>
             </select>
-            <button class="btn-editar" data-id="${id}">Editar</button>
+            <button class="btn-editar" data-id="${id}">
+              ${emEdicao ? "Salvar" : "Editar"}
+            </button>
           </div>
         </td>
       </tr>
 
-      <tr class="linha-info" data-id="${id}">
+      <tr class="linha-info">
         <td colspan="7">
           <strong>Informações:</strong>
-          <span class="info-text">${o.info || ""}</span>
           ${
-            linkUrl
-              ? `<br><strong>Link:</strong> 
-                 <a href="${linkUrl}" target="_blank" rel="noopener noreferrer">
-                   ${o.link}
-                 </a>`
-              : ""
+            emEdicao
+              ? `<textarea class="edit-info" data-id="${id}" style="width:100%; box-sizing:border-box;">${o.info || ""}</textarea>
+                 <br><br>
+                 <strong>Link:</strong>
+                 <input type="text" class="edit-link" data-id="${id}" value="${o.link || ""}" style="width:100%; box-sizing:border-box;">`
+              : `<span>${o.info || ""}</span>
+                 ${
+                   linkUrl
+                     ? `<br><strong>Link:</strong>
+                        <a href="${linkUrl}" target="_blank">${o.link}</a>`
+                     : ""
+                 }`
           }
         </td>
       </tr>
 
-      <tr class="linha-obs" data-id="${id}">
+      <tr class="linha-obs">
         <td colspan="7">
           <strong>Observações:</strong>
-          <span class="obs-text">${o.observacoes || ""}</span>
+          ${
+            emEdicao
+              ? `<textarea class="edit-obs" data-id="${id}" style="width:100%; box-sizing:border-box;">${o.observacoes || ""}</textarea>`
+              : `<span>${o.observacoes || ""}</span>`
+          }
         </td>
       </tr>
     `);
   });
+}
+
+onValue(osRef, (snapshot) => {
+  render(snapshot);
 });
 
 /* ==========================
-   🖱️ EDITAR / SALVAR
+   🖱️ CLICK
 ========================== */
-lista.addEventListener("click", (e) => {
+
+lista.addEventListener("click", async (e) => {
   const btn = e.target.closest(".btn-editar");
   if (!btn) return;
 
   const id = btn.dataset.id;
-  const trPrincipal = btn.closest("tr");
-  const trInfo = trPrincipal.nextElementSibling;
-  const trObs = trInfo.nextElementSibling;
 
-  /* 💾 SALVAR */
-  if (btn.textContent === "Salvar") {
-    const novoInfo = trInfo.querySelector(".edit-info").value;
-    const novaObs = trObs.querySelector(".edit-obs").value;
-    const novoLink = trInfo.querySelector(".edit-link").value;
+  if (editandoId === id) {
+    const novoInfo = document.querySelector(`.edit-info[data-id="${id}"]`).value;
+    const novaObs = document.querySelector(`.edit-obs[data-id="${id}"]`).value;
+    const novoLink = document.querySelector(`.edit-link[data-id="${id}"]`).value;
 
-    update(ref(db, `ordens-servico/${id}`), {
+    await update(ref(db, `ordens-servico/${id}`), {
       info: novoInfo,
       observacoes: novaObs,
       link: novoLink
     });
 
     editandoId = null;
-    return;
+  } else {
+    editandoId = id;
   }
-
-  /* ✏️ EDITAR */
-  if (editandoId && editandoId !== id) {
-    alert("Finalize a edição atual primeiro.");
-    return;
-  }
-
-  editandoId = id;
-
-  const infoAtual = trInfo.querySelector(".info-text")?.textContent || "";
-  const obsAtual = trObs.querySelector(".obs-text")?.textContent || "";
-  const linkAtual = trInfo.querySelector("a")?.textContent || "";
-
-  trInfo.innerHTML = `
-    <td colspan="7">
-      <strong>Informações:</strong><br>
-      <textarea class="edit-info" style="width:100%; box-sizing:border-box;">${infoAtual}</textarea>
-      <br><br>
-      <strong>Link:</strong><br>
-      <input type="text" class="edit-link" value="${linkAtual}" style="width:100%; box-sizing:border-box;">
-    </td>
-  `;
-
-  trObs.innerHTML = `
-    <td colspan="7">
-      <strong>Observações:</strong><br>
-      <textarea class="edit-obs" style="width:100%; box-sizing:border-box;">${obsAtual}</textarea>
-    </td>
-  `;
-
-  btn.textContent = "Salvar";
 });
 
 /* ==========================
-   🔄 STATUS CHANGE
+   🔄 STATUS
 ========================== */
+
 lista.addEventListener("change", (e) => {
   if (!e.target.classList.contains("status")) return;
 
@@ -203,5 +187,4 @@ lista.addEventListener("change", (e) => {
   const novoStatus = e.target.value;
 
   update(ref(db, `ordens-servico/${id}`), { status: novoStatus });
-  e.target.className = `${classeStatus(novoStatus)} status`;
 });
