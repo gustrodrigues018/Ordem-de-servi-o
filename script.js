@@ -84,6 +84,10 @@ onValue(osRef, (snapshot) => {
     const o = child.val();
     const id = child.key;
 
+    const linkUrl = o.link
+      ? (o.link.startsWith("http") ? o.link : "https://" + o.link)
+      : "";
+
     lista.insertAdjacentHTML("beforeend", `
       <tr class="linha-principal" data-id="${id}">
         <td>${o.dataCriacao}</td>
@@ -108,6 +112,14 @@ onValue(osRef, (snapshot) => {
         <td colspan="7">
           <strong>Informações:</strong>
           <span class="info-text">${o.info || ""}</span>
+          ${
+            linkUrl
+              ? `<br><strong>Link:</strong> 
+                 <a href="${linkUrl}" target="_blank" rel="noopener noreferrer">
+                   ${o.link}
+                 </a>`
+              : ""
+          }
         </td>
       </tr>
 
@@ -135,30 +147,16 @@ lista.addEventListener("click", (e) => {
 
   /* 💾 SALVAR */
   if (btn.textContent === "Salvar") {
-    const novoInfo = trInfo.querySelector("textarea").value;
-    const novaObs = trObs.querySelector("textarea").value;
-
-    // 🔄 RECRIA AS LINHAS (fecha edição visual)
-    trInfo.innerHTML = `
-      <td colspan="7">
-        <strong>Informações:</strong>
-        <span class="info-text">${novoInfo}</span>
-      </td>
-    `;
-
-    trObs.innerHTML = `
-      <td colspan="7">
-        <strong>Observações:</strong>
-        <span class="obs-text">${novaObs}</span>
-      </td>
-    `;
+    const novoInfo = trInfo.querySelector(".edit-info").value;
+    const novaObs = trObs.querySelector(".edit-obs").value;
+    const novoLink = trInfo.querySelector(".edit-link").value;
 
     update(ref(db, `ordens-servico/${id}`), {
       info: novoInfo,
-      observacoes: novaObs
+      observacoes: novaObs,
+      link: novoLink
     });
 
-    btn.textContent = "Editar";
     editandoId = null;
     return;
   }
@@ -171,20 +169,24 @@ lista.addEventListener("click", (e) => {
 
   editandoId = id;
 
-  const infoAtual = trInfo.querySelector(".info-text").textContent;
-  const obsAtual = trObs.querySelector(".obs-text").textContent;
+  const infoAtual = trInfo.querySelector(".info-text")?.textContent || "";
+  const obsAtual = trObs.querySelector(".obs-text")?.textContent || "";
+  const linkAtual = trInfo.querySelector("a")?.textContent || "";
 
   trInfo.innerHTML = `
     <td colspan="7">
       <strong>Informações:</strong><br>
-      <textarea style="width:100%; box-sizing:border-box;">${infoAtual}</textarea>
+      <textarea class="edit-info" style="width:100%; box-sizing:border-box;">${infoAtual}</textarea>
+      <br><br>
+      <strong>Link:</strong><br>
+      <input type="text" class="edit-link" value="${linkAtual}" style="width:100%; box-sizing:border-box;">
     </td>
   `;
 
   trObs.innerHTML = `
     <td colspan="7">
       <strong>Observações:</strong><br>
-      <textarea style="width:100%; box-sizing:border-box;">${obsAtual}</textarea>
+      <textarea class="edit-obs" style="width:100%; box-sizing:border-box;">${obsAtual}</textarea>
     </td>
   `;
 
